@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Workplace Competency Assessment | Bridge the Breach</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,Helvetica,sans-serif;background:#e8e8e8;color:#1a1a1a}
+#app{min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:1.5rem 1rem}
+.wrap{width:100%;max-width:920px}
+.card{background:#fff;border-radius:12px;box-shadow:0 4px 28px rgba(0,0,0,.13);width:100%}
+.cover{padding:2.5rem 2.25rem;border-radius:12px}
+.cover-brand{font-size:.75rem;font-weight:700;color:#f1801c;letter-spacing:.1em;text-transform:uppercase;margin-bottom:1rem}
+.cover h1{font-size:1.7rem;font-weight:700;color:#1a1a1a;margin-bottom:.5rem;line-height:1.3}
+.cover-tag{font-size:.95rem;color:#555;margin-bottom:1.5rem;line-height:1.65;font-style:italic}
+.cover-desc{background:#f7f6f2;border-radius:8px;padding:1.1rem 1.4rem;margin-bottom:1.4rem}
+.cover-desc p{font-size:.92rem;color:#444;line-height:1.8;margin-bottom:.6rem}
+.cover-desc p:last-child{margin-bottom:0}
+.hl{color:#f1801c;font-weight:700}
+.cover-rules{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:1.6rem}
+.rule-box{display:flex;align-items:flex-start;gap:.6rem;padding:.8rem 1rem;border:1.5px solid #eee;border-radius:8px}
+.ri{font-size:1.1rem;flex-shrink:0;margin-top:1px}
+.rt{font-size:.82rem;color:#444;line-height:1.55}
+.rt b{color:#1a1a1a;display:block;margin-bottom:1px}
+.start-btn{display:block;width:100%;padding:14px;background:#f1801c;color:#fff;border:none;border-radius:8px;font-size:1rem;font-weight:700;cursor:pointer;font-family:Arial,Helvetica,sans-serif}
+.start-btn:hover{background:#d96e14}
+.cd-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:380px;background:#1a1a1a;border-radius:12px}
+.cd-lbl{font-size:.75rem;font-weight:700;color:#888;letter-spacing:.1em;text-transform:uppercase;margin-bottom:1rem}
+.cd-n{font-size:9rem;font-weight:700;color:#f1801c;line-height:1;animation:pop .35s ease}
+.cd-sub{font-size:1rem;color:#fff;margin-top:1rem}
+@keyframes pop{from{transform:scale(1.5);opacity:0}to{transform:scale(1);opacity:1}}
+.q-prog{height:5px;background:#eee;border-radius:12px 12px 0 0;overflow:hidden}
+.q-prog-fill{height:5px;background:#f1801c;transition:width .4s}
+.q-hdr{background:#f1801c;padding:1.2rem 1.4rem 1.4rem}
+.q-badge{font-size:.72rem;font-weight:700;color:rgba(255,255,255,.85);background:rgba(0,0,0,.15);padding:.2rem .7rem;border-radius:99px;display:inline-block;margin-bottom:.6rem}
+.q-scenario{font-size:.96rem;font-weight:700;color:#fff;line-height:1.6}
+.q-body{padding:1rem 1.3rem 0}
+.opts-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.9rem}
+.opt-card{position:relative;border:2px solid #ddd;border-radius:9px;padding:.85rem .9rem;background:#fff}
+.opt-card.hi-most{border-color:#f1801c;background:#fff8f2}
+.opt-card.hi-least{border-color:#7b3f00;background:#fff3e6}
+.opt-badge{position:absolute;top:-11px;right:-11px;width:25px;height:25px;border-radius:50%;background:#f1801c;color:#fff;font-size:.75rem;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.18)}
+.opt-text{font-size:.86rem;color:#333;line-height:1.55}
+.sel-area{background:#f7f6f2;border-top:1px solid #e8e8e8;padding:.85rem 1.3rem}
+.sel-row{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;margin-bottom:.5rem}
+.sel-row:last-child{margin-bottom:0}
+.sel-lbl{font-size:.8rem;font-weight:700;color:#1a1a1a;min-width:215px}
+.sel-btns{display:flex;gap:.4rem}
+.s-btn{width:36px;height:36px;border-radius:50%;border:none;font-size:.8rem;font-weight:700;cursor:pointer;font-family:Arial,Helvetica,sans-serif;color:#fff;background:#f1801c}
+.s-btn:hover{background:#d96e14}
+.s-btn.on-most{background:#c8540a;box-shadow:0 0 0 3px #f1801c,0 0 0 5px #fff3e0}
+.s-btn.on-least{background:#5c2e00;box-shadow:0 0 0 3px #7b3f00,0 0 0 5px #ffe8cc}
+.opt-alert{display:none;font-size:.78rem;color:#A32D2D;font-weight:600;padding:.2rem 1.3rem;background:#FCEBEB;text-align:center}
+.q-foot{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1.3rem;border-top:1px solid #eee}
+.timer-wrap{display:flex;align-items:center;gap:.5rem}
+.t-icon{font-size:1.4rem}
+.t-lbl{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#f1801c;display:block;line-height:1}
+.t-secs{font-size:1.4rem;font-weight:700;color:#f1801c;line-height:1.2}
+.t-secs.warn{color:#0057b7}
+.t-secs.urgent{color:#cc0000;animation:blink .45s infinite alternate}
+@keyframes blink{from{opacity:1}to{opacity:.3}}
+.cont-btn{background:#f1801c;color:#fff;border:none;padding:10px 24px;border-radius:8px;font-size:.86rem;font-weight:700;cursor:pointer;font-family:Arial,Helvetica,sans-serif}
+.cont-btn:disabled{background:#ccc;cursor:not-allowed}
+.lead-wrap{padding:2rem 1.75rem}
+.lead-wrap h2{font-size:1.25rem;font-weight:700;color:#1a1a1a;margin-bottom:.35rem}
+.lead-sub{font-size:.88rem;color:#555;margin-bottom:1.4rem;line-height:1.6}
+.f-grid{display:grid;grid-template-columns:1fr 1fr;gap:.85rem}
+.f-full{grid-column:1/-1}
+.f-label{display:block;font-size:.75rem;font-weight:700;color:#444;margin-bottom:.32rem;letter-spacing:.02em}
+.f-input{width:100%;padding:10px 12px;border:2px solid #d8d8d8;border-radius:8px;font-size:.9rem;color:#1a1a1a;background:#fff;font-family:Arial,Helvetica,sans-serif;outline:none}
+.f-input:focus{border-color:#f1801c}
+.gender-row{display:flex;gap:.6rem}
+.g-opt{flex:1;display:flex;align-items:center;justify-content:center;gap:.5rem;padding:.65rem .5rem;border:2px solid #d8d8d8;border-radius:8px;cursor:pointer;background:#fff;-webkit-user-select:none;user-select:none}
+.g-opt:hover{border-color:#f1801c;background:#fffaf6}
+.g-opt.gsel{border-color:#f1801c;background:#fff8f2}
+.g-lbl{font-size:.86rem;font-weight:700;color:#333}
+.g-opt.gsel .g-lbl{color:#f1801c}
+.phone-row{display:flex;gap:.45rem}
+.flag-sel{padding:10px 7px;border:2px solid #d8d8d8;border-radius:8px;font-size:.85rem;background:#fff;cursor:pointer;outline:none;font-family:Arial,Helvetica,sans-serif;color:#1a1a1a;min-width:105px}
+.phone-inp{flex:1;padding:10px 12px;border:2px solid #d8d8d8;border-radius:8px;font-size:.9rem;color:#1a1a1a;background:#fff;font-family:Arial,Helvetica,sans-serif;outline:none}
+.f-err{font-size:.77rem;color:#A32D2D;font-weight:600;margin-top:.6rem;display:none}
+.f-submit{display:block;width:100%;margin-top:1rem;padding:13px;background:#f1801c;color:#fff;border:none;border-radius:8px;font-size:.92rem;font-weight:700;cursor:pointer;font-family:Arial,Helvetica,sans-serif}
+.f-note{font-size:.73rem;color:#aaa;text-align:center;margin-top:.55rem;line-height:1.55}
+.fb-wrap{padding:1.6rem 1.75rem 1.4rem}
+.fb-step{font-size:.7rem;font-weight:700;color:#f1801c;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.25rem}
+.fb-almost{font-size:.8rem;color:#5a9e3a;font-weight:700;margin-bottom:.7rem}
+.fb-q{font-size:1rem;font-weight:700;color:#1a1a1a;margin-bottom:.25rem}
+.fb-inst{font-size:.78rem;color:#888;font-style:italic;margin-bottom:.9rem}
+.fb-row{display:flex;align-items:center;gap:.65rem;padding:.65rem .85rem;border:2px solid #e0e0e0;border-radius:8px;margin-bottom:.5rem;cursor:pointer;background:#fff}
+.fb-row:hover{border-color:#f1801c;background:#fffaf6}
+.fb-row.fbsel{border-color:#f1801c;background:#fff8f2}
+.fb-ltr{width:28px;height:28px;border-radius:6px;background:#f1801c;color:#fff;font-size:.78rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;pointer-events:none}
+.fb-txt{font-size:.86rem;color:#333;line-height:1.45;pointer-events:none}
+.fb-foot{display:flex;justify-content:flex-end;margin-top:.9rem}
+.fb-nxt{background:#f1801c;color:#fff;border:none;padding:10px 28px;border-radius:8px;font-size:.86rem;font-weight:700;cursor:pointer;font-family:Arial,Helvetica,sans-serif}
+.fb-nxt:disabled{background:#ccc;cursor:not-allowed}
+.load-wrap{padding:2.75rem 2rem;text-align:center}
+.load-wrap h2{font-size:1.5rem;font-weight:700;color:#1a1a1a;margin-bottom:1.5rem}
+.spinner{width:52px;height:52px;border:5px solid #e0e0e0;border-top-color:#f1801c;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 1.25rem}
+@keyframes spin{to{transform:rotate(360deg)}}
+.load-bar{height:12px;background:#e0e0e0;border-radius:6px;overflow:hidden;max-width:320px;margin:.8rem auto}
+.load-fill{height:12px;background:#f1801c;border-radius:6px;animation:lfill 2.8s ease forwards}
+@keyframes lfill{0%{width:0}100%{width:88%}}
+.load-cap{font-size:.8rem;color:#888;font-style:italic}
+.view-btn{display:inline-block;background:#f1801c;color:#fff;border:none;padding:12px 32px;border-radius:8px;font-size:.9rem;font-weight:700;cursor:pointer;font-family:Arial,Helvetica,sans-serif;margin-top:1.4rem}
+.res-hdr{background:#f1801c;padding:1.1rem 1.4rem;border-radius:12px 12px 0 0;display:flex;justify-content:space-between;align-items:center}
+.res-hdr-brand{font-size:.92rem;font-weight:700;color:#fff}
+.res-hdr-sub{font-size:.72rem;color:rgba(255,255,255,.8)}
+.res-hdr-date{font-size:.72rem;color:rgba(255,255,255,.75)}
+.res-body{padding:1.25rem;position:relative;overflow:hidden}
+.watermark{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-35deg);font-size:5rem;font-weight:900;color:rgba(241,128,28,.06);white-space:nowrap;pointer-events:none;z-index:0;letter-spacing:.05em;text-transform:uppercase}
+.res-content{position:relative;z-index:1}
+.res-hero{background:#f7f6f2;border-radius:10px;padding:1.1rem 1.2rem;margin-bottom:1.25rem;display:flex;align-items:flex-start;gap:1.1rem}
+.ov-ring{width:80px;height:80px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0}
+.ov-pct{font-size:1.5rem;font-weight:700;line-height:1}
+.ov-lbl{font-size:.6rem;color:#888;margin-top:2px}
+.ov-info h3{font-size:.9rem;font-weight:700;color:#1a1a1a;margin-bottom:.2rem}
+.ov-meta{font-size:.74rem;color:#888;margin-bottom:.4rem}
+.ov-info p{font-size:.83rem;color:#444;line-height:1.7}
+/* Level ladder */
+.level-ladder{display:flex;align-items:center;gap:0;margin:.75rem 0 0;flex-wrap:nowrap;overflow-x:auto}
+.ll-step{display:flex;flex-direction:column;align-items:center;flex:1;min-width:0}
+.ll-dot{width:28px;height:28px;border-radius:50%;border:2px solid #ddd;background:#f0f0f0;display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;color:#999;position:relative;z-index:1;flex-shrink:0}
+.ll-dot.active{border-color:#f1801c;background:#f1801c;color:#fff;box-shadow:0 0 0 3px rgba(241,128,28,.2)}
+.ll-dot.passed{border-color:#f1801c;background:#fff8f2;color:#f1801c}
+.ll-name{font-size:.58rem;color:#888;margin-top:3px;text-align:center;white-space:nowrap;font-weight:600;letter-spacing:.02em}
+.ll-name.active{color:#f1801c;font-weight:700}
+.ll-connector{flex:1;height:2px;background:#ddd;margin-top:-16px;min-width:6px}
+.ll-connector.passed{background:#f1801c}
+.comp-list{display:flex;flex-direction:column;gap:.9rem;margin-bottom:1.25rem}
+.comp-card{border:1.5px solid #eaecec;border-radius:9px;padding:1rem}
+.comp-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+.comp-name{font-size:.88rem;font-weight:700;color:#1a1a1a}
+.comp-pill{font-size:.7rem;font-weight:700;padding:2px 9px;border-radius:99px}
+.c-bar-bg{height:5px;background:#eee;border-radius:3px;margin-bottom:8px;overflow:hidden}
+.c-bar-fill{height:5px;border-radius:3px}
+.comp-note{font-size:.8rem;color:#444;line-height:1.7;margin-bottom:8px}
+.comp-dev{font-size:.8rem;color:#1a1a1a;padding:8px 11px;background:#f7f6f2;border-left:3px solid #f1801c;border-radius:0 6px 6px 0;line-height:1.65}
+.comp-dev-lbl{font-size:.63rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#f1801c;display:block;margin-bottom:3px}
+.res-cta{border:1.5px solid #e8e8e8;border-radius:10px;padding:1.2rem;text-align:center;margin-bottom:1.1rem}
+.res-cta h3{font-size:.92rem;font-weight:700;color:#1a1a1a;margin-bottom:.35rem}
+.res-cta p{font-size:.8rem;color:#555;margin-bottom:.9rem;line-height:1.6}
+.cta-row{display:flex;gap:.65rem;justify-content:center;flex-wrap:wrap}
+.btn-pdf{background:#f1801c;color:#fff;border:none;padding:10px 20px;border-radius:8px;font-size:.8rem;font-weight:700;cursor:pointer;font-family:Arial,Helvetica,sans-serif}
+.btn-join{background:#fff;color:#1a1a1a;border:2px solid #d8d8d8;padding:10px 20px;border-radius:8px;font-size:.8rem;font-weight:700;cursor:pointer;font-family:Arial,Helvetica,sans-serif;text-decoration:none;display:inline-block}
+.btn-join:hover{border-color:#f1801c;color:#f1801c}
+.res-foot{text-align:center;padding:.9rem;border-top:1px solid #eee}
+.res-foot-name{font-size:.86rem;font-weight:700;color:#1a1a1a;margin-bottom:.3rem}
+.res-foot-desc{font-size:.7rem;color:#888;line-height:1.7;max-width:440px;margin:0 auto .35rem}
+.res-foot-services{font-size:.7rem;color:#999;margin-bottom:.2rem}
+.res-foot-contact{font-size:.7rem;color:#bbb}
+.f-hint{font-size:.7rem;color:#888;margin-top:.25rem;line-height:1.4}
+</style>
+</head>
+<body>
+<div id="app"><div class="wrap" id="wrap"></div></div>
+<script>
+var SHEET_URL="https://script.google.com/macros/s/AKfycbwibawzXiAO8p_NZwoeE3No0oUT0v_K5n89zx716D_cFLUy8EDrBT8pOYuPBnH8J7w/exec";
+var CO_EMAIL="hello@bridgethebreach.com";
+var CO_NAME="Bridge the Breach";
+var CO_WEB="www.bridgethebreach.com";
+var PROGRAMME_URL="https://bridgethebreach.com/competency-development-program";
+var TIMER_SEC=50;
+var CURRENT_YEAR=new Date().getFullYear();
+
+var COUNTRIES=[
+  {f:"🇳🇬",n:"Nigeria",  c:"+234",min:11,max:11,re:/^0[7-9][0-9]\d{8}$/,hint:"11 digits starting with 070, 080, 081, 090, 091 e.g. 08012345678"},
+  {f:"🇬🇭",n:"Ghana",    c:"+233",min:10,max:10,re:/^0[235]\d{8}$/,hint:"10 digits starting with 02x, 03x, or 05x e.g. 0241234567"},
+  {f:"🇰🇪",n:"Kenya",    c:"+254",min:10,max:10,re:/^0[17]\d{8}$/,hint:"10 digits starting with 07x or 01x e.g. 0712345678"},
+  {f:"🇿🇦",n:"S. Africa",c:"+27", min:10,max:10,re:/^0[6-8]\d{8}$/,hint:"10 digits starting with 06x, 07x, or 08x e.g. 0821234567"},
+  {f:"🇬🇧",n:"UK",       c:"+44", min:10,max:11,re:/^0\d{9,10}$/,hint:"10-11 digits starting with 07 e.g. 07911123456"},
+  {f:"🇺🇸",n:"USA",      c:"+1",  min:10,max:10,re:/^[2-9]\d{9}$/,hint:"10 digits, no leading 0 e.g. 2125551234"},
+  {f:"🇨🇦",n:"Canada",   c:"+1",  min:10,max:10,re:/^[2-9]\d{9}$/,hint:"10 digits, no leading 0 e.g. 4161234567"},
+  {f:"🇮🇳",n:"India",    c:"+91", min:10,max:10,re:/^[6-9]\d{9}$/,hint:"10 digits starting with 6-9 e.g. 9876543210"},
+  {f:"🇦🇺",n:"Australia",c:"+61", min:9, max:10,re:/^0?[2-9]\d{7,8}$/,hint:"9-10 digits e.g. 0412345678"},
+  {f:"🌍",n:"Other",     c:"+",   min:6, max:15,re:/^\d{6,15}$/,hint:"Digits only, no spaces or letters"}
+];
+
+// 6-level scoring system
+var LEVELS=[
+  {key:"novice",    label:"Novice",     min:0,  max:35},
+  {key:"developing",label:"Developing", min:36, max:55},
+  {key:"emergent",  label:"Emergent",   min:56, max:70},
+  {key:"performing",label:"Performing", min:71, max:80},
+  {key:"strong",    label:"Strong",     min:81, max:90},
+  {key:"advanced",  label:"Advanced",   min:91, max:100}
+];
+
+function sLvl(v){
+  for(var i=LEVELS.length-1;i>=0;i--){if(v>=LEVELS[i].min)return LEVELS[i].label;}
+  return "Novice";
+}
+function sLvlIdx(v){
+  for(var i=LEVELS.length-1;i>=0;i--){if(v>=LEVELS[i].min)return i;}
+  return 0;
+}
+function sTier(v){return v>=81?"high":v>=56?"mid":"low";}
+
+function sCol(v){
+  if(v>=81)return{bg:"#EAF3DE",bar:"#639922",txt:"#3B6D11",pill:"#C0DD97",pt:"#3B6D11"};
+  if(v>=56)return{bg:"#FAEEDA",bar:"#BA7517",txt:"#854F0B",pill:"#FAC775",pt:"#854F0B"};
+  return{bg:"#FCEBEB",bar:"#E24B4A",txt:"#A32D2D",pill:"#F7C1C1",pt:"#A32D2D"};
+}
+
+// BTB ID validation: BTB-YYYY-NNN where YYYY = current year, NNN = 3-digit number
+function validateBTBID(val){
+  if(!val||val.trim()==="")return false; // CHANGE 1: now required — empty is invalid
+  var re=new RegExp("^BTB-"+CURRENT_YEAR+"-\\d{3}$");
+  return re.test(val.trim());
+}
+
+// Fisher-Yates shuffle
+function shuffle(arr){
+  var a=arr.slice();
+  for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}
+  return a;
+}
+
+var QsSource=[
+  /* ── CONFLICT RESOLUTION ── */
+  {id:1,comps:["conflict_resolution"],
+   scenario:"You are working on a cross-departmental project. Over the past two weeks, you have noticed that two colleagues on the team have stopped acknowledging each other in meetings, their email exchanges have become very brief and transactional, and one of them recently asked to be reassigned to a different workstream without giving a reason. No one has raised any issue openly. You are not the team lead. What do you do?",
+   opts:{a:"Raise your observation privately with the team lead, describing the specific behaviours you have noticed and suggesting it may be worth checking in with both individuals before it affects the project.",b:"Bring it up in the next team meeting so that the issue is addressed openly and both colleagues are encouraged to resolve whatever is happening between them.",c:"Leave it alone. People have professional disagreements and unless someone raises it formally, it is not your place to get involved in other people's dynamics.",d:"Speak to one of the two colleagues directly and ask what is going on, so you can better understand whether the team needs to be concerned."},
+   most:"a",least:"b"},
+  {id:2,comps:["conflict_resolution"],
+   scenario:"A colleague regularly interrupts you during team discussions and often finishes your sentences or redirects the conversation before you complete your point. You have let it go several times, but it is affecting your ability to contribute and others have started looking to him as the voice of your ideas. You decide to address it. How do you handle the conversation?",
+   opts:{a:"Bring it up in the next team meeting when it happens in real time, so the pattern is visible to everyone and your colleague understands the impact it is having.",b:"Request a private conversation, describe the specific moments where it has happened, explain the impact on your contributions, and ask that he allow you to finish your thoughts before responding.",c:"Speak to your manager first and ask them to observe the next few meetings so there is a witness before you raise it with your colleague.",d:"Stop contributing as much in meetings and instead send your points by email after each session, avoiding the situation until you find a better time to address it."},
+   most:"b",least:"d"},
+  {id:3,comps:["conflict_resolution","collaboration"],
+   scenario:"You and a colleague have been tasked with co-leading an initiative. You strongly disagree on the approach: you want to pilot the idea with one team first, while she wants to launch across all departments simultaneously. The deadline for agreeing on an approach is tomorrow. Both of you believe your approach is better for the organisation. What do you do?",
+   opts:{a:"Agree to present both approaches to your shared manager and let her decide, since you cannot reach consensus on your own.",b:"Accept your colleague's approach to avoid an impasse. A simultaneous launch may have challenges, but maintaining the working relationship matters more right now.",c:"Shift the conversation from your preferred methods to the shared outcome you both want, and explore what conditions or risks each approach is trying to address, to see if a combined or phased solution is possible.",d:"Request a one-day extension from leadership to allow more time for research that could settle the disagreement with data before tomorrow's deadline."},
+   most:"c",least:"b"},
+  /* ── TEAMWORK & COLLABORATION ── */
+  {id:4,comps:["collaboration","emotional_intelligence"],
+   scenario:"You have recently joined a new team. In your first few meetings, you notice that team members rarely ask questions, nobody challenges ideas when they are presented, and when the team lead speaks, the room tends to go quiet and nod along. You have ideas that you believe could improve an ongoing project but you are unsure whether it is the right environment to raise them. What do you do?",
+   opts:{a:"Wait until you have been on the team for at least three months before sharing ideas, so you are better established and your input will carry more weight.",b:"Share your ideas directly in the next team meeting. If people are too cautious to speak up, someone needs to model that it is acceptable, and you have nothing to lose as a newcomer.",c:"Start building individual relationships with team members outside of meetings to understand the team culture better, and look for a natural moment to share your perspective with the team lead one-on-one first.",d:"Raise your observation with HR that the team culture appears to suppress participation, and suggest that a team health assessment be conducted before the project progresses further."},
+   most:"c",least:"d"},
+  {id:5,comps:["collaboration","accountability"],
+   scenario:"Your team is preparing a report due at the end of the week. A colleague is responsible for a major section, but midweek you realise his part has not progressed and he has been unresponsive to messages. The rest of the team is waiting on his section to complete their own work. You are not the team lead. What do you do?",
+   opts:{a:"Complete his section yourself using what you know, so the report is not delayed. You can raise the issue with the team lead once the deadline has passed.",b:"Let the team lead know immediately that the section has not progressed and that the team is blocked, so she can follow up with your colleague directly.",c:"Send your colleague a direct message flagging the urgency and making clear that the team is being held up, then inform the team lead if he remains unresponsive after a few hours.",d:"Inform the rest of the team in a group message so everyone is aware of the situation and can adjust their own timelines accordingly."},
+   most:"c",least:"a"},
+  /* ── EMOTIONAL INTELLIGENCE ── */
+  {id:6,comps:["emotional_intelligence","communication"],
+   scenario:"You are presenting a proposal you have worked on for three weeks. A senior colleague interrupts midway and says the idea has already been tried and failed two years ago. Several people in the room look at you. You feel caught off guard and you can sense your frustration rising. What do you do?",
+   opts:{a:"Pause, thank your colleague for the input, and ask him to share what happened with the previous attempt so you can acknowledge what is similar and explain what your proposal does differently.",b:"Explain firmly that you were not aware of the previous attempt and that it would have been more helpful for this to have been raised with you before the meeting rather than during your presentation.",c:"Acknowledge his point briefly, skip the rest of the proposal, and offer to send a revised version by end of week that addresses his concern.",d:"Continue presenting without responding directly to the comment. Interruptions during presentations are disruptive and acknowledging them signals that they are welcome."},
+   most:"a",least:"d"},
+  {id:7,comps:["emotional_intelligence","collaboration"],
+   scenario:"A colleague who is usually energetic and engaged has been notably quiet in meetings for the past week. She has been completing her work but contributes less than usual, gives short answers when asked for input, and left a team lunch early without explanation. You are close enough to speak to her. What do you do?",
+   opts:{a:"Bring it up in your next team catch-up and ask how she is doing. It is better to ask in a structured setting where you are already talking about how things are going.",b:"Mention it to your manager so she is aware in case there is something affecting performance that needs to be addressed early.",c:"Find an informal moment — a coffee break or a quick walk — to check in privately and let her know you have noticed she seems a bit different lately, and that you are available if she wants to talk.",d:"Continue as normal. Everyone has off weeks and reaching out could feel intrusive. If something serious is going on, she will bring it up when she is ready."},
+   most:"c",least:"b"},
+  {id:8,comps:["emotional_intelligence","conflict_resolution"],
+   scenario:"During a team brainstorm, a disagreement breaks out between two colleagues over the direction of the project. Voices are getting louder, others have gone silent, and the facilitator seems unsure how to redirect. The meeting has 20 minutes left. You are not the facilitator. What do you do?",
+   opts:{a:"Jump in and take a side. The team is wasting time going in circles and someone needs to make a call on which direction to go.",b:"Wait for the facilitator to take control. It is their responsibility to manage the room, and stepping in without being asked could undermine them.",c:"Address the group calmly, acknowledge that there are clearly strong views on both sides, and suggest the team spend the remaining time mapping out the key trade-offs of each direction rather than trying to resolve it through debate.",d:"Suggest ending the meeting early and giving each side a day to write up their argument so the team can review both perspectives with a clearer head."},
+   most:"c",least:"a"},
+  /* ── ACTIVE LISTENING ── */
+  {id:9,comps:["active_listening","communication"],
+   scenario:"A client calls to express frustration about a recent delivery. She speaks quickly, covers several complaints at once — the timeline slipped, the specifications were slightly off, and a team member was dismissive when she raised concerns. She ends by saying she is reconsidering whether to continue the contract. You are the account manager. What do you do?",
+   opts:{a:"Apologise immediately for all the issues she raised and assure her the team will fix everything, so she knows you take her seriously before she decides anything.",b:"Ask her to send her concerns in writing so the team can review them properly and come back with a formal response within 48 hours.",c:"Before responding, reflect back what you have understood — the timeline, the specification gap, and the experience with the team member — and ask her which of these is most urgent for her so you can focus your response correctly.",d:"Respond to each complaint one by one, explaining the reasons behind the timeline issue and the specification gap and clarifying what the team member was trying to communicate."},
+   most:"c",least:"b"},
+  {id:10,comps:["active_listening","emotional_intelligence"],
+   scenario:"You are in a one-on-one meeting with a junior team member to discuss his recent performance. He says everything is fine and that he has no concerns, but his body language tells a different story — he is avoiding eye contact, giving very short answers, and seems tense. You sense he is not being fully honest. What do you do?",
+   opts:{a:"Accept his answers at face value. He has said everything is fine and pressing further could make him feel that he is not trusted to know his own situation.",b:"Tell him directly that his body language suggests otherwise and ask him to be honest with you, because you cannot help if he does not open up.",c:"Acknowledge that these conversations can feel formal and sometimes uncomfortable, share something briefly about your own experience with performance discussions, and ask an open question that invites him to share what is genuinely going on for him.",d:"End the meeting as planned, but follow up with a short message later in the day letting him know your door is open if anything comes up that he would like to discuss."},
+   most:"c",least:"b"},
+  /* ── GIVING & RECEIVING FEEDBACK ── */
+  {id:11,comps:["feedback","communication"],
+   scenario:"A colleague presented to a client last week. The presentation was technically solid but she read directly from her slides for most of it, rarely made eye contact, and lost the client's attention visibly in the final third. The client gave positive but lukewarm follow-up. You were in the room. She has a similar client presentation in two weeks. She has not asked for feedback. What do you do?",
+   opts:{a:"Say nothing unless she asks. Giving unsolicited feedback risks damaging your relationship and she may already be aware of the issues.",b:"Ask if she has a moment to share some thoughts on the presentation, focus on what you observed during the session, and explain the impact it may have had on the client's engagement, while asking what she thought went well.",c:"Send her a message pointing out the specific moments where the audience disengaged and recommending some presentation techniques she could apply for the next one.",d:"Mention to your manager that the presentation had some issues so she can decide whether to coach your colleague or reassign the next client meeting."},
+   most:"b",least:"d"},
+  {id:12,comps:["feedback","accountability"],
+   scenario:"During a project retrospective, a colleague says in front of the group that your section of the report felt rushed and lacked the depth the team needed to make confident decisions. You worked hard on it and believe the brief you were given was unclear, which is why the output looked the way it did. What do you do in the moment?",
+   opts:{a:"Thank your colleague for the feedback, ask the group for one or two specific areas where they felt more depth was needed, and note it down to factor into future work.",b:"Explain to the group that the brief you received was not specific enough and that the output reflected the information you had, so the quality issue is a shared problem.",c:"Stay quiet during the meeting, then follow up with your colleague privately to understand exactly what she meant and to share your perspective on the brief.",d:"Acknowledge what she said, then use the moment to ask the team what a clearer brief would have looked like, reframing the conversation towards better processes going forward."},
+   most:"a",least:"b"},
+  /* ── WRITTEN COMMUNICATION ── */
+  {id:13,comps:["written_communication","accountability"],
+   scenario:"You manage a small team and need to send an update to your department head about a project that has hit a delay. The delay is caused by a dependency on another team that has not delivered data you were expecting. The original deadline was this Friday. The new realistic deadline is two weeks away. You have a plan for managing the gap. What does your email look like?",
+   opts:{a:"Write a detailed email walking through the full project history, every step taken so far, and the background context on why the dependency exists, then state the delay at the end.",b:"Open with the key information — there is a delay, the new deadline is two weeks out, the cause is an undelivered dependency, and you have a plan — then briefly outline the plan and next steps.",c:"Send a short two-line message stating the deadline will be missed and that you will send a full update by end of day once you have confirmed the new timeline.",d:"Copy in the head of the other team on the email so the department head can see directly who caused the delay and expects a response from both sides."},
+   most:"b",least:"a"},
+  /* ── VERBAL COMMUNICATION ── */
+  {id:14,comps:["verbal_communication","communication"],
+   scenario:"You are asked to give a five-minute verbal update on your project in a leadership meeting. It is the first time this group is hearing about it. When you finish, the room is quiet and a director asks: 'So what exactly do you need from us?' You realise your update covered a lot of background but did not clearly state the ask. The director is looking at you. What do you do?",
+   opts:{a:"Apologise for not being clearer and offer to send a written summary afterwards with the specific request outlined.",b:"Summarise in two or three sentences what you need from the room — the decision, resource, or support — and check whether that is clear before moving on.",c:"Explain that the intent of the update was to inform rather than to ask for anything specifically, and that you will follow up in writing when you are ready for a formal decision.",d:"Ask the director to clarify what she would need to see in order to be able to support the project, so you can tailor your response to what matters most to the room."},
+   most:"b",least:"c"},
+  /* ── PROBLEM DIAGNOSIS ── */
+  {id:15,comps:["critical_thinking","problem_diagnosis"],
+   scenario:"Your team's customer satisfaction scores have dropped for the third consecutive month. Your manager asks the team to come up with solutions. One colleague suggests improving the tone of customer-facing emails. Another recommends launching a loyalty discount. You are asked for your input. What do you say?",
+   opts:{a:"Support the loyalty discount idea since it directly incentivises customers to stay, which addresses the most immediate risk of churn while the team figures out deeper issues.",b:"Suggest the team first investigate what is actually driving the drop — whether it is response times, product issues, billing errors, or something else — before committing to any solution.",c:"Propose a customer survey to find out directly from customers what is bothering them and use that data to prioritise where to focus first.",d:"Recommend all three ideas — better emails, a discount, and a survey — since running multiple interventions at once increases the chances that at least one of them will move the scores."},
+   most:"b",least:"d"},
+  /* ── EVIDENCE-BASED THINKING ── */
+  {id:16,comps:["critical_thinking","problem_diagnosis"],
+   scenario:"Your company recently introduced a new onboarding programme for new hires. Three months later, retention data shows that employees who went through the new programme are staying longer than those hired before it was introduced. Your manager is excited and wants to announce the programme as the reason retention has improved and scale it across all regions. What do you do?",
+   opts:{a:"Support your manager's conclusion. The data clearly shows that employees who went through the programme stayed longer, which is exactly what a good onboarding programme should produce.",b:"Raise the possibility that other factors may explain the difference — for example, changes in hiring criteria, team changes, or market conditions — and suggest the team examine what else changed during the same period before drawing a firm conclusion.",c:"Recommend scaling the programme immediately in parallel with collecting more data, since delaying while waiting for perfect evidence may mean missing the window to act.",d:"Commission a full independent research study before making any further decisions, as the current sample is too small and the analysis too early to be relied upon."},
+   most:"b",least:"a"},
+  /* ── CRITICAL THINKING ── */
+  {id:17,comps:["critical_thinking","collaboration"],
+   scenario:"Your team is debating whether to adopt a new project management tool. A senior colleague argues that the team should switch because 'everyone in the industry is moving to this platform and we will be left behind if we do not.' Another colleague counters that the current tool works well enough and switching will cost time and money with no guaranteed improvement. You are asked for your view. What do you say?",
+   opts:{a:"Agree with the senior colleague. If the industry is moving in that direction, there is likely a reason for it and it is better to adapt early than to resist change.",b:"Agree with the colleague who wants to keep the current tool. Switching systems is disruptive and 'everyone is doing it' is not a good enough reason on its own.",c:"Point out that the argument for switching relies on what others are doing rather than on evidence of what the new tool would do better for your team specifically, and suggest the team define what problems they are trying to solve before evaluating any tool.",d:"Suggest putting it to a team vote since both sides have valid points and the fairest way to resolve the disagreement is through collective decision-making."},
+   most:"c",least:"d"},
+  /* ── CREATIVE PROBLEM-SOLVING ── */
+  {id:18,comps:["creative_problem_solving","critical_thinking"],
+   scenario:"Your team has been asked to reduce the time it takes to onboard new clients from six weeks to three weeks. The team's first reaction is that it is impossible — the process involves multiple departments, legal approvals, and document verification that each take time and cannot be skipped. You are asked to contribute to the discussion. What do you say?",
+   opts:{a:"Support the team's assessment. Some processes have hard constraints and pushing against them without understanding the dependencies could create compliance or quality risks.",b:"Suggest that the team identify which steps actually depend on each other and which are simply done sequentially out of habit, to find out if some can run simultaneously or be simplified without removing anything essential.",c:"Recommend presenting leadership with a detailed breakdown of every step and its time requirement to show that the three-week target is unrealistic given the current process.",d:"Volunteer to benchmark how competitor organisations handle client onboarding and bring back examples of what is possible, so the team has external reference points before concluding it cannot be done."},
+   most:"b",least:"c"},
+  {id:19,comps:["creative_problem_solving","accountability"],
+   scenario:"Your team has developed a new internal process for handling customer escalations. Before rolling it out across the entire organisation, you are asked how you would recommend validating whether it works. The team is eager to implement it and feels the design is already strong. What do you suggest?",
+   opts:{a:"Roll it out fully as designed. The team has invested significant time in it and running it on a small scale first could create inconsistency — some teams following the old process and others the new one.",b:"Propose running the new process with one team or in one region for four to six weeks, measuring the key outcomes you expect it to improve, and using those results to refine it before wider rollout.",c:"Survey the teams who will be affected by the change to get their buy-in and use their feedback to make any final adjustments before implementing it across the organisation.",d:"Ask an external consultant to review the process design before implementation, since internal teams often have blind spots and an outside perspective will validate whether the design is sound."},
+   most:"b",least:"a"},
+  /* ── STRATEGIC DECISION-MAKING ── */
+  {id:20,comps:["strategic_decision_making","critical_thinking"],
+   scenario:"Your team has three initiatives it wants to pursue next quarter, but only has the budget and capacity to do two. Your manager has asked the team to decide which two to prioritise. In the discussion, people are advocating for their preferred initiatives based on personal investment and enthusiasm. The conversation is going in circles. You decide to speak up. What do you say?",
+   opts:{a:"Suggest voting on which two initiatives people feel most confident about, since the team is stuck and a democratic approach will at least produce a clear outcome.",b:"Recommend that before debating the options further, the team agree on the criteria that matter most for making this decision — such as strategic alignment, likely impact, required resources, and urgency — and then evaluate each initiative against those criteria.",c:"Point out which of the three initiatives you believe is least important based on your understanding of the company's current priorities, and propose the team drop that one first so the decision narrows.",d:"Suggest the team escalate the decision to a senior leader since the group clearly has conflicting views and someone with more authority should make the final call."},
+   most:"b",least:"d"},
+  {id:21,comps:["strategic_decision_making","critical_thinking"],
+   scenario:"Your team is about to commit to a new vendor for a critical piece of your operations. The vendor has strong references and a competitive price, but they are a relatively young company and the contract would represent their largest client to date. You have two weeks to make a decision and sign. What is the most effective way to approach this?",
+   opts:{a:"Proceed with signing. Strong references and a competitive price are good indicators, and smaller vendors often provide more attentive service to their biggest clients.",b:"Request a two-week extension from your own leadership to allow more time for due diligence, since two weeks is not enough to evaluate a vendor for a critical operational dependency.",c:"Before committing, identify the scenarios where the vendor relationship could fail — capacity constraints, financial instability, key personnel leaving — and ensure there is a mitigation plan or exit clause for each before signing.",d:"Ask the vendor to provide a pilot engagement at reduced scope before signing the full contract, which gives both parties time to test the relationship with lower risk."},
+   most:"c",least:"a"},
+  {id:22,comps:["strategic_decision_making","communication"],
+   scenario:"Your team has made a decision to change an internal reporting process that will affect three departments. You believe the new process is clearly better, but you know one department head has historically pushed back on changes to how her team operates. You need her buy-in before implementation. What do you do?",
+   opts:{a:"Send a detailed email to all three department heads at the same time explaining the change, the reasons behind it, and the implementation timeline. Treating everyone equally prevents the impression that you are managing anyone differently.",b:"Meet with the resistant department head before the wider announcement, walk her through the change and the reasoning behind it, listen to her specific concerns, and address them before presenting to the full group.",c:"Present the change to the other two department heads first, build their visible support, and then bring that consensus to the resistant department head so she sees that the majority are already on board.",d:"Escalate to your manager and ask her to communicate the change directly to the three department heads, since the decision has already been made and a senior message will carry more weight."},
+   most:"b",least:"c"},
+  /* ── CUSTOMER HANDLING ── */
+  {id:23,comps:["customer_handling","communication"],
+   scenario:"A customer calls and immediately begins speaking loudly. He says he has been waiting four days for a resolution to a billing error that was supposed to be fixed by Monday. He says no one has updated him, his time has been wasted, and if the issue is not fixed today, he will be cancelling his subscription. You are looking at his account and you can see the error has partially been corrected but is not yet complete. What do you do?",
+   opts:{a:"Explain calmly that billing corrections take time and that the issue is in progress, assuring him it will be resolved by end of week.",b:"Apologise for the lack of communication, acknowledge his frustration, confirm what has already been done on the account, be specific about what remains, and commit to a clear timeline for the final resolution with a direct follow-up from you.",c:"Tell him his feedback about communication is noted and that you will pass it on to the relevant team, then update him on where the correction stands.",d:"Offer a service credit as a goodwill gesture to show you value his patience, and explain that the billing correction is in its final stages."},
+   most:"b",least:"c"},
+  {id:24,comps:["customer_handling","emotional_intelligence"],
+   scenario:"You are on a call with a customer who started out frustrated but has now become verbally abusive — raising his voice, using personal insults, and speaking over you every time you try to respond. You want to resolve his issue but the interaction is becoming unsafe for you. What do you do?",
+   opts:{a:"Stay on the call and absorb the behaviour. The customer is clearly very stressed and ending the call might escalate the situation further.",b:"Interrupt firmly, let him know you are willing to help but are not able to continue the conversation in this manner. If it continues, inform him calmly that you will need to end the call and invite him to reach back when he is ready to discuss it differently.",c:"Put him on a brief hold, transfer the call to a supervisor, and let them handle it. Supervisors are better equipped for these situations.",d:"End the call immediately. Personal abuse is unacceptable and you are not obligated to continue."},
+   most:"b",least:"a"},
+  /* ── CUSTOMER EMPATHY ── */
+  {id:25,comps:["customer_empathy","active_listening"],
+   scenario:"A long-standing customer contacts your support channel via chat. Her messages are composed but unusually terse. She explains that her account was incorrectly suspended, which caused her to miss an important client presentation this morning. She says she just wants the account restored and does not want an explanation. How do you respond?",
+   opts:{a:"Restore the account immediately and close the ticket with a note that the issue has been resolved per her request.",b:"Acknowledge what happened to her this morning before fixing the account, briefly name the significance of what she missed, restore access quickly, and follow up to confirm everything is working as expected.",c:"Restore the account, apologise for the error, explain what caused the suspension so she can be confident it will not happen again, and offer her a discount on next month's subscription.",d:"Restore the account and ask if she would be open to a brief call with your team lead to personally address the impact of what happened."},
+   most:"b",least:"a"},
+  /* ── SELF-AWARENESS & ACCOUNTABILITY ── */
+  {id:26,comps:["accountability","feedback"],
+   scenario:"After a major project concludes, your team runs a retrospective. Several colleagues independently mention that during the project, decisions often waited for your input even when you were not directly involved, and that people seemed reluctant to proceed without your approval. They note this sometimes slowed the team down. You are surprised by this feedback. What is the most effective response?",
+   opts:{a:"Explain that you were involved in most decisions because you had the most relevant experience, and that seeking your input was a sensible approach given the project's complexity.",b:"Thank your colleagues for raising it, acknowledge that you may not have been fully aware of how your involvement was landing, and commit to reflecting on how to actively create more space for others to make decisions independently.",c:"Apologise for the delays and ask the team to let you know in future when they feel ready to proceed without you, so you can formally step back from those decisions.",d:"Suggest the team introduce a clearer RACI framework for the next project so that everyone knows in advance who holds decision-making authority and accidental bottlenecks can be avoided."},
+   most:"b",least:"a"},
+  /* ── VERBAL COMMUNICATION (CONFIDENCE) ── */
+  {id:27,comps:["verbal_communication","emotional_intelligence"],
+   scenario:"You have recently been promoted and are presenting to a senior audience for the first time. During your presentation, you notice you are using phrases like 'sort of,' 'I think maybe,' and 'this might just be me, but…' before each of your main points. A senior leader asks you mid-presentation: 'Do you believe in this recommendation or not?' The room is watching. What do you do?",
+   opts:{a:"Explain that you are presenting it as one option among several and that the final decision rests with the leadership in the room, which is why you framed it tentatively.",b:"Pause, state your recommendation clearly and directly, confirm that yes, you do believe in it, and briefly explain the two or three reasons that support your confidence in it.",c:"Acknowledge that you could have been clearer and that you will send a follow-up document that lays out your recommendation more definitively.",d:"Ask the senior leader what specifically is making the recommendation seem uncertain so you can address that concern directly."},
+   most:"b",least:"a"},
+  /* ── COGNITIVE BIAS / PROBLEM DIAGNOSIS ── */
+  {id:28,comps:["critical_thinking","problem_diagnosis"],
+   scenario:"Your team has been discussing why sales of a new product have underperformed expectations. One colleague suggests that the issue is pricing — he points to three customers who specifically mentioned it was too expensive when they declined. Your manager is leaning towards lowering the price. Before a decision is made, you want to make sure the team is looking at this correctly. What do you say?",
+   opts:{a:"Support the pricing adjustment. Three customers independently mentioning cost is meaningful signal and acting on direct customer feedback is better than theorising.",b:"Suggest that the team check how many customers declined for reasons other than price, and what the full data looks like across all lost deals, before drawing conclusions from three examples.",c:"Recommend that the team survey all prospects who declined in the last quarter to get a more complete picture before making any pricing decision.",d:"Point out that if three customers said price, there are probably many more who thought it but did not say it, and that the team should treat this as representative of a broader pattern."},
+   most:"b",least:"d"},
+  /* ── COLLABORATION (GROUPTHINK) ── */
+  {id:29,comps:["collaboration","critical_thinking"],
+   scenario:"Your team is finalising a strategy that everyone has been working on for weeks. In the final review meeting, there is a strong sense of consensus and momentum. You have one significant concern about a core assumption in the strategy — if that assumption is wrong, the plan will not work. Several respected colleagues have already endorsed the plan. You are not the most senior person in the room. What do you do?",
+   opts:{a:"Stay quiet. The team has invested a lot and the concern may not be as significant as you think. You can raise it informally with someone after the meeting.",b:"Raise your concern clearly in the meeting — name the specific assumption, explain the risk if it does not hold, and ask whether the team has pressure-tested it — while acknowledging the strong work that has been done.",c:"Ask a question that leads the team to examine the assumption themselves, rather than stating your concern directly, so the group surfaces the issue without it feeling like a challenge.",d:"Send a note to the team lead after the meeting with your concern documented, so it is on record even if the plan moves forward as agreed."},
+   most:"b",least:"a"},
+  /* ── STRATEGIC DECISION-MAKING (REFLECTION) ── */
+  {id:30,comps:["strategic_decision_making","accountability"],
+   scenario:"A major initiative your team led has just concluded. The results were disappointing — targets were missed and the project ran over budget. In the debrief, the team focuses mostly on the external factors that made it difficult: a market shift, a supplier delay, and a personnel change midway through. You are the team lead. How do you steer the debrief?",
+   opts:{a:"Allow the team to document the external factors thoroughly. These are accurate and important for leadership to understand so the team is not unfairly judged on outcomes outside its control.",b:"Acknowledge the external factors, then shift the conversation to ask what decisions the team made — and when — that they would make differently now, regardless of what the environment threw at them.",c:"Focus the debrief entirely on what went well so the team leaves with their confidence intact. Dwelling on what went wrong when external factors played such a large role could dent morale unnecessarily.",d:"Separate the debrief into two sessions — one to document what happened and why, and a second session a week later to create an improvement plan once emotions have settled."},
+   most:"b",least:"c"}
+];
+
+// CHANGE 6: Shuffle questions at the start of each session
+var Qs=shuffle(QsSource);
+
+var CM={
+  communication:{label:"Communication",
+    high:{
+      note:"Your responses show that you communicate with intention, structure, and honesty even when the situation is difficult or the stakes are high. You do not avoid difficult messages or dress them up to soften their impact. You lead with what is true, frame it clearly, and give the other person what they need to act or respond. This is the kind of communication that builds credibility with colleagues and clients over time.",
+      action:"Your next level of development is not about what you say but how consistently you apply this standard. In low-pressure moments, emails, quick updates, informal check-ins, the same discipline of clarity and honesty is needed. Review your last five routine messages and ask honestly: would someone reading these for the first time know exactly what is expected of them and by when? That is the standard to sustain."
+    },
+    mid:{
+      note:"Your communication is solid in structured settings but tends to soften or become less direct when the message is uncomfortable or the audience is senior. This shows up as vague language, delayed responses, or framing that prioritises how the message lands over what the message actually says. The result is that people around you sometimes have to guess at your real position, your real concerns, or what you actually need from them.",
+      action:"Choose one difficult conversation you have been putting off, whether it is pushing back on a decision, flagging a risk, or correcting a misunderstanding, and plan to have it this week. Write down the three most important things you need to communicate in that conversation before you go in. That act of preparation alone shifts your communication from reactive to deliberate."
+    },
+    low:{
+      note:"The patterns in your responses suggest that communication under pressure tends to default to what feels safe rather than what is accurate or useful. You may be inclined to give the answer that avoids conflict, that makes the situation feel manageable, or that protects your image in the short term. But communication that prioritises comfort over clarity creates confusion, erodes trust, and forces others to make decisions based on incomplete or misleading information.",
+      action:"For the next two weeks, apply one rule before you send or say anything significant: can the person receiving this message act on it immediately without needing to ask a follow-up question? If not, rewrite it until they can. This one discipline, clarity of action, will change the way people experience working with you."
+    }
+  },
+  critical_thinking:{label:"Critical Thinking",
+    high:{
+      note:"Your responses reveal an ability to step back from a problem before acting, to question what you know and what you are assuming, and to consider multiple contributing factors before committing to a response or solution. This is genuinely rare. Most professionals under pressure move straight to action. You demonstrate the discipline to diagnose before you decide, which leads to more accurate solutions and fewer costly reversals.",
+      action:"Your development edge is translating your thinking process into something others can follow. The quality of your analysis only creates full value when decision-makers and teammates can trust and trace your reasoning. Practice narrating your thinking out loud in team settings: explain not just what you recommend but how you got there. This builds influence, not just accuracy."
+    },
+    mid:{
+      note:"You show genuine analytical ability in structured, familiar situations, but when time pressure is high or the problem is emotionally charged, there is a tendency to move toward the first plausible explanation rather than testing it. This means you are sometimes solving a symptom rather than the underlying issue, which leads to situations where the same problem resurfaces in a slightly different form.",
+      action:"Develop a habit of asking one question before you respond to any significant issue: what else could be causing this? Force yourself to generate at least two alternative explanations before you act on your first instinct. This single habit, running your first explanation through a brief challenge before committing to it, will significantly improve the accuracy of your decisions."
+    },
+    low:{
+      note:"Your responses suggest a tendency to react to what is immediately visible in a situation rather than examining the layers underneath. This is not a lack of intelligence, it is a pattern of thinking that prioritises speed and action over diagnosis. The risk is that you spend significant energy resolving situations that are not the real problem, while the actual root cause remains unaddressed and keeps generating the same issues.",
+      action:"Start with one practical exercise. The next time something goes wrong at work, before you do anything, write down three answers to this question: what caused this? Then for each answer, ask: what caused that? Push yourself two levels deeper than your first instinct. You will consistently find that the real issue is at level two or three, not level one. This exercise, done regularly, fundamentally changes how you approach problems."
+    }
+  },
+  collaboration:{label:"Collaboration",
+    high:{
+      note:"Your responses demonstrate a strong ability to hold your position and contribute your perspective without becoming aggressive or dismissive of others. You know how to create space for disagreement to be productive rather than destructive. This kind of collaborative maturity, advocating for yourself and your ideas while remaining genuinely open to the group, is what makes teams trust each other and move faster.",
+      action:"The next development challenge for someone at your level is using your collaborative strength to expand it in others. Begin noticing which voices tend to get crowded out in your team settings, whether by seniority, personality, or habit, and create deliberate space for those perspectives. Your ability to bring others in without losing your own voice is what separates good collaborators from exceptional ones."
+    },
+    mid:{
+      note:"You collaborate effectively when the environment is supportive and the dynamics are clear, but when tension rises, seniority is involved, or your ideas are challenged without engagement, there is a tendency to withdraw, defer, or find indirect ways to express your concern. This means that in the moments when your perspective is most needed, it is least likely to be heard. The team loses your input and you carry the frustration of not having contributed fully.",
+      action:"Identify the specific type of situation where you most often pull back. Is it when a senior person disagrees? When the group has already decided? When you feel your idea was dismissed without consideration? Once you can name the trigger, you can prepare a specific response for it. Practice saying one thing in that moment, even just: 'Before we move forward, I want to make sure we have considered one more angle.' That sentence alone keeps you in the room."
+    },
+    low:{
+      note:"Your responses suggest that when collaboration becomes difficult or uncomfortable, the default is to accommodate, avoid, or wait for the situation to resolve itself. This approach protects short-term harmony but creates long-term costs. Your ideas remain unexplored, your frustrations remain unaddressed, and the people around you do not get the benefit of your real thinking. Over time, this pattern can reduce your visibility, your influence, and your own sense of contribution at work.",
+      action:"Start small and specific. In your next team meeting, commit to making one contribution that is not just agreeing with what has already been said. It does not have to be a challenge. It could be a question, an observation, or an alternative angle. One contribution per meeting, consistently, will begin to shift both how others see you and how you see yourself as a contributor."
+    }
+  },
+  emotional_intelligence:{label:"Emotional Intelligence",
+    high:{
+      note:"Your responses reflect a well-developed ability to read the emotional dimension of situations and respond in ways that are calibrated to what is actually happening in the room, not just what is being said. You can hold your own emotional state steady while attending to the dynamics around you. This capacity to de-escalate, redirect, and create safety without abandoning your own perspective is one of the most valuable professional skills and one of the rarest.",
+      action:"At your level, the development focus is on expanding your range in the most extreme situations: when you personally are the target of unfair criticism, when someone you are close to is in crisis, or when the stakes are genuinely high and emotions are running very hot. Those are the moments where even strong emotional intelligence can buckle. Reflect on your most recent high-pressure situation and ask: did I respond in a way I am fully proud of? What would I do differently?"
+    },
+    mid:{
+      note:"You demonstrate emotional awareness when you have time to think and when the situation is predictable, but sudden shifts in emotional tone, unexpected defensiveness, public criticism, or high-stakes confrontation tend to catch you off-guard. In those moments, you may respond in ways that escalate rather than settle, or you may go quiet when your presence and steadiness are exactly what is needed. The gap between how you respond in comfortable and uncomfortable emotional situations is where your development sits.",
+      action:"Build a pause habit. The next time you feel an emotional reaction rising in a professional setting, whether it is frustration, defensiveness, or discomfort, create a physical signal for yourself: breathe in slowly before you speak, or pause for three seconds before you respond to an email that triggered something. That gap, small as it is, is where emotional intelligence is actually practiced. The pause does not make you passive. It makes you intentional."
+    },
+    low:{
+      note:"Your responses suggest that the emotional dimension of situations is not yet something you are reading or responding to with consistent awareness. You may be defaulting to what feels logically correct without fully registering how the people around you are experiencing the situation. This creates a pattern where your responses, though well-intentioned, can miss the mark, sometimes making tense situations worse or leaving people feeling unseen or steamrolled. This is one of the most significant development opportunities available to you, because improving here has a multiplying effect on every other professional skill you have.",
+      action:"Adopt one reflection practice for the next 30 days. After any interaction that felt difficult or did not go the way you expected, spend five minutes writing down three things: what you were feeling, what the other person was likely feeling, and what you would do differently. You do not need to share this with anyone. This private reflection practice, done consistently, builds the neural pathways for emotional awareness faster than any training programme."
+    }
+  },
+  accountability:{label:"Accountability",
+    high:{
+      note:"Your responses demonstrate a consistent willingness to own your commitments, communicate proactively when things are not going to plan, and take responsibility for the outcome rather than the explanation. This is accountability in its fullest professional expression. It is not just about admitting when things go wrong. It is about being the kind of person others can rely on without having to check in, and about building the kind of trust that opens doors over the course of a career.",
+      action:"The development edge at your level is helping to build this same standard in those around you. The way you respond when others are honest about their gaps, whether with support, problem-solving, or genuine appreciation for the transparency, will determine whether accountability becomes a cultural norm on your team or remains an individual trait. Practice responding to a colleague's honest admission of a gap in a way that makes them glad they told you."
+    },
+    mid:{
+      note:"You generally take ownership of your work and your commitments, but there is a tendency to communicate problems later than optimal, especially when the admission feels like it might reflect negatively on your competence or your effort. This delay in surfacing risk, even by a day or two, can significantly reduce the team's ability to respond effectively. By the time you raise it, the window for a good solution may have already closed.",
+      action:"Apply one rule for the next month: whenever you notice that something you are responsible for is at risk of not being delivered on time or to the expected standard, communicate it in the same working day that you notice it, not the day before the deadline. Write out what is at risk, what you have done so far, and what you need. Sending this message early will feel uncomfortable. Do it anyway. The response will almost always be more supportive than your fear suggested."
+    },
+    low:{
+      note:"Your responses suggest a pattern where explaining the context of why something happened takes precedence over focusing on what is being done about it. This is understandable because context often feels important and protective. But from the perspective of those depending on you, what they need first is to know you own the situation and have a plan, not a reconstruction of how it got there. When accountability is inconsistent, even when the underlying work is strong, it erodes the trust that makes professional relationships and opportunities grow.",
+      action:"Practise changing the sequence. When something goes wrong, lead with: here is what I am doing about it. Then follow with: here is what happened. That order, solution before explanation, signals ownership rather than defensiveness. It is a small linguistic shift with a significant impact on how others experience your reliability. Try it in your next difficult conversation and notice the difference in how it lands."
+    }
+  },
+  written_communication:{label:"Written Communication",
+    high:{
+      note:"Your responses reflect a clear understanding that written communication is not just about transferring information but about making it as easy as possible for the reader to receive, understand, and act on that information. You think about structure, sequencing, and the reader's perspective before you write, and the result is communication that respects the other person's time and conveys competence. In professional settings, this skill compounds over time: the quality of your written communication shapes how you are perceived by people who may never meet you in person.",
+      action:"Your development edge is precision at the sentence level. Review a sample of your recent professional writing and look specifically for sentences that could be shorter, phrases that could be cut without losing meaning, and assumptions you are making about what the reader already knows. The goal is not brevity for its own sake but maximum clarity per word. A message that says exactly what is needed in fewer words is almost always more effective than a longer version."
+    },
+    mid:{
+      note:"Your written communication gets the job done but tends to lack the structure and precision that would make it genuinely easy for a busy professional to act on. The information is usually there but the reader has to work to extract it: searching for the key point, inferring the action that is required, or following up to clarify what was meant. In a professional context where people receive dozens of messages a day, communication that requires extra effort to decode is communication that gets deprioritised.",
+      action:"Before you send any significant professional message, ask yourself three questions: does the subject line or opening sentence tell the reader exactly what this message is about? Have I clearly stated what I need from them and by when? Is there anything in here that could be misunderstood? If you cannot answer yes to all three, rewrite before you send. Apply this check consistently for two weeks and you will notice a significant improvement in response rates and in how others perceive your professionalism."
+    },
+    low:{
+      note:"Your responses suggest that written communication is an area where significant development is available to you. The current pattern tends toward messages that are either too casual for the professional context, too dense to extract the key point from quickly, or missing the explicit action that the reader needs to take. This creates a cycle of follow-up messages, miscommunication, and a perception gap between your actual capability and how you come across in writing, which increasingly is where professional first impressions are formed.",
+      action:"Start with one practical standard: every professional email you write must have a clear opening sentence that states the purpose of the message, a body that contains only information relevant to that purpose, and a closing line that states exactly what you need and by when. If your message does not have all three, it is not ready to send. Apply this standard to every professional message for the next 30 days. The improvement will be visible to everyone you correspond with."
+    }
+  },
+  feedback:{label:"Giving & Receiving Feedback",
+    high:{
+      note:"Your responses reflect a mature and professional relationship with feedback in both directions. You treat it as information rather than judgment, which means you can receive it without becoming defensive and give it without becoming harsh. This capacity — to be genuinely curious about what the other person is saying rather than immediately protective of your own position — is what makes feedback actually useful rather than just formally exchanged. It is also one of the most visible indicators of professional maturity, and others notice it.",
+      action:"Your development at this level is about creating the conditions for feedback to flow more freely around you, not just receiving and giving it yourself. Notice whether the people you work with feel safe raising concerns with you, giving you honest input, or telling you when something is not working. If you are getting very little unsolicited feedback, it may be that your environment has become too comfortable. Actively invite it. Ask a colleague this week: what is one thing I could do differently that would make your work easier?"
+    },
+    mid:{
+      note:"You handle feedback competently in predictable, structured situations — such as a planned review or a considered one-on-one conversation — but when feedback arrives unexpectedly, publicly, or from someone whose judgment you question, the instinct to explain or push back tends to arrive before genuine curiosity about what is being said. This limits the value you get from the feedback and can make the person giving it feel that the conversation was not worth having.",
+      action:"Develop one specific practice for receiving unexpected feedback: before you respond to anything that feels like criticism or challenge, take a breath and ask one genuine question. Not a rhetorical question designed to expose a flaw in the feedback, but a real question aimed at understanding it better. 'Can you give me a specific example?' is usually the most useful one. That single question signals openness, buys you time to process, and almost always gives you more useful information than your first defensive response would have."
+    },
+    low:{
+      note:"Your responses indicate that feedback situations currently feel more threatening than useful, and that the default response — whether to defend, justify, dismiss, or withdraw — is arriving before you have had a chance to genuinely consider what is being said. This means that you are missing a significant source of professional development that is available to you for free, every time someone in your workplace takes the risk of telling you something honest. The people who grow fastest professionally are usually those who are most skilled at extracting value from difficult feedback rather than protecting themselves from it.",
+      action:"Begin with one small commitment: the next time you receive any form of critical feedback, your only response in the moment will be 'thank you' and one question. Nothing else. No context. No explanation. No justification. Just thank them and ask one thing to understand it better. After the conversation, write down what was said and sit with it for 24 hours before you decide whether you agree. This single practice, done consistently, will begin to rebuild your relationship with feedback from something to avoid into something to seek."
+    }
+  },
+  conflict_resolution:{label:"Conflict Resolution",
+    high:{
+      note:"Your responses show that you approach conflict with both courage and skill. You are willing to name issues directly, engage with the underlying concerns on all sides, and find paths forward that do not require anyone to lose. This is rare. Most people either avoid conflict entirely or engage with it in ways that entrench positions rather than resolve them. Your ability to navigate it constructively makes teams more honest, decisions more robust, and working relationships more durable.",
+      action:"At your level, the next challenge is developing others in this area. Begin noticing how your team handles disagreement — whether issues get raised early or suppressed until they become urgent, whether people engage with different views or retreat. Use your own comfort with conflict to model and invite healthier patterns in the people around you."
+    },
+    mid:{
+      note:"You demonstrate real ability to address conflict in structured, lower-stakes settings, but when the tension is higher, the seniority gap is larger, or the relationship matters more to you, there is a tendency to soften your approach in ways that leave the real issue unresolved. This means that some conflicts you engage with technically but not fully — you raise something, but not quite all of it, or not with quite enough directness to shift the dynamic.",
+      action:"Before your next difficult conversation, write out the one thing you most want to say but are most tempted to leave unsaid. That is almost always the thing that needs to be said. Practice building to it rather than around it."
+    },
+    low:{
+      note:"Your responses suggest that when conflict arises — whether between you and a colleague, or between others around you — the instinct is to withdraw, defer, or wait for someone else to address it. This is understandable. Conflict is uncomfortable and the risks of getting it wrong feel real. But unaddressed conflict does not go away; it accumulates, surfaces in unexpected ways, and erodes the trust and clarity that make teams effective.",
+      action:"Start with a low-stakes situation. Identify one workplace tension — however small — that you have been avoiding, and commit to addressing it directly this week. Prepare one sentence that names the issue clearly and one question that invites the other person's perspective. That structure alone is enough to begin."
+    }
+  },
+  active_listening:{label:"Active Listening",
+    high:{
+      note:"Your responses demonstrate that you listen to understand rather than to respond. You pick up on what is said, what is left unsaid, and what the emotional weight of a message is — and you adjust your response accordingly. This kind of listening is genuinely rare in professional settings, where most people are composing their reply while the other person is still speaking. The impact is that people feel genuinely heard when they interact with you, which builds the kind of trust that makes difficult conversations possible.",
+      action:"Your development edge is using your listening ability more deliberately in group settings. In your next team meeting, take on the role of the person who synthesises what has been said before the group moves forward. Summarising what different people have contributed — accurately and generously — is one of the highest-value contributions a strong listener can make."
+    },
+    mid:{
+      note:"You listen well in one-on-one settings and in conversations where the topic is clear and the emotional stakes are low. But when conversations are fast-moving, emotionally charged, or involve multiple people speaking at once, there is a tendency to respond to the surface content — what was literally said — rather than the fuller message, including tone, context, and what the person may need beyond the words they used.",
+      action:"In your next important conversation, practice paraphrasing before you respond. After the other person finishes speaking, say back what you heard in your own words — not to show you were listening, but to check that you actually understood. Notice how often your summary prompts a small correction or addition. Those corrections are the parts of the message you would have missed."
+    },
+    low:{
+      note:"Your responses suggest that in conversations — particularly under time pressure or when you feel you already understand the situation — there is a tendency to move to your response before the other person has fully communicated what they need. This creates a pattern where people feel partially heard, where misunderstandings take longer to surface, and where your responses, though well-intentioned, sometimes address the wrong part of the problem.",
+      action:"This week, try one practice: in every conversation where someone comes to you with a concern or a problem, do not offer a response or a solution until you have asked at least one question that is genuinely about understanding their experience better. Not a clarifying question about facts — a question about what they need, what they felt, or what they are most worried about. This single shift will change the quality of your interactions significantly."
+    }
+  },
+  verbal_communication:{label:"Verbal Communication",
+    high:{
+      note:"Your responses reflect an ability to communicate verbally with both clarity and confidence, even in high-pressure or high-stakes moments. You understand that what you say and how you say it are equally important, and you manage both deliberately. You can adapt your delivery to the audience and the moment — concise when that is what is needed, more expansive when context is required — without losing the thread of your message. This is a significant professional asset.",
+      action:"Your development edge is precision under scrutiny. The moments that will define your verbal communication reputation are the ones where you are challenged, interrupted, or caught off-guard. Practice recovering mid-conversation: the ability to pause, reframe, and re-engage clearly when a question or challenge has thrown you off is what separates strong communicators from exceptional ones."
+    },
+    mid:{
+      note:"You communicate clearly and confidently in familiar or prepared settings, but when the environment is unfamiliar, the audience is more senior, or something unexpected happens mid-conversation, there is a tendency to lose structure, become more tentative, or over-explain in ways that dilute the impact of your message. Your content is often good; the delivery in high-pressure moments does not always reflect that.",
+      action:"Record yourself speaking — even informally, even just a voice note — on a topic you care about, for two minutes without preparation. Listen back and identify the three things that undermine clarity: filler words, qualifiers that soften your point unnecessarily, or sentences that take too long to reach the main idea. Work on one of those three for the next two weeks."
+    },
+    low:{
+      note:"Your responses suggest that verbal communication, particularly in formal or senior settings, is an area where you are not yet operating with full confidence or clarity. You may be holding back strong ideas because you are uncertain how they will land, or communicating them in ways that do not convey their actual value. In professional settings, how clearly and confidently you speak shapes how people assess your capability — often before they have seen your work.",
+      action:"Start building confidence through repetition, not performance. In your next three team meetings, commit to making one clear verbal contribution in each — not a long speech, just one point, stated directly without hedging. Over time, this builds the muscle of speaking up before you feel fully ready, which is the only way the readiness eventually comes."
+    }
+  },
+  problem_diagnosis:{label:"Problem Diagnosis",
+    high:{
+      note:"Your responses demonstrate a disciplined ability to distinguish between what is visible in a situation and what is actually causing it. You resist the pull to act on symptoms and instead invest in understanding the system or sequence of events that produced the problem. This saves significant time and resource over the course of a career, because you are less likely to fix the wrong thing and more likely to make interventions that hold.",
+      action:"Your development challenge is making your diagnostic thinking legible to others. When you identify a root cause that others have not seen, it can be perceived as over-complicating things or slowing the team down. Practice framing your diagnosis in terms of risk: 'If we act on what is visible without checking this, here is what we might miss.' That framing makes your thinking feel protective rather than obstructive."
+    },
+    mid:{
+      note:"You show strong diagnostic instincts in situations you have seen before, but when the problem is novel or when the team is moving quickly, there is a tendency to accept the first plausible explanation and begin solving from there. This creates a pattern where solutions are well-executed but sometimes targeted at the wrong problem — which means the issue resurfaces, often in a slightly different form.",
+      action:"When you next encounter a problem at work, write down your initial explanation — your first instinct about what caused it. Then write down two alternative explanations that are equally plausible. Force yourself to hold all three before deciding which to act on. This small delay between instinct and action is where diagnostic accuracy is built."
+    },
+    low:{
+      note:"Your responses suggest that when a problem presents itself, the movement to a solution is quick — often quicker than the diagnostic process that should precede it. This is a very common pattern, especially in environments that reward action and speed. But it creates a cycle where problems get treated repeatedly without being resolved, because the treatment is aimed at the symptom rather than the source.",
+      action:"For the next two weeks, apply a single rule before you act on any significant problem: write down what you think is causing it, then ask yourself one question — what would I need to see to know whether this explanation is correct? If you cannot answer that question, you are not yet ready to act. This discipline will feel slow at first. It will save you significant time and frustration over the course of your career."
+    }
+  },
+  creative_problem_solving:{label:"Creative Problem-Solving",
+    high:{
+      note:"Your responses show that you are genuinely willing to question the assumptions embedded in a problem before accepting its constraints as fixed. You look for solutions outside the expected range, you are comfortable with uncertainty, and you bring energy to possibilities rather than limitations. This kind of thinking is what generates ideas that are actually new rather than improvements on existing ones — and it makes you a valuable presence in any room where difficult problems are being worked through.",
+      action:"Your development edge is knowing when to harness this thinking and when to contain it. Creative problem-solving is most powerful when it is focused. Practice applying it to a specific, constrained challenge rather than a broad one, and notice how the quality of your ideas changes when the scope is clear. The best creative thinkers are not those who are always expansive — they are those who know when expansion serves the problem and when structure does."
+    },
+    mid:{
+      note:"You are capable of creative thinking when the environment actively invites it, but in situations where the team has already formed a view or momentum is in a particular direction, there is a tendency to work within the given frame rather than question it. This means your most creative instincts do not always surface in the moments where they would be most valuable — when everyone else is converging on an answer that may not be the right one.",
+      action:"The next time your team is converging on a solution, try asking one question before the group commits: 'What are we assuming here that might not be true?' You do not have to have an alternative. Just naming the assumption opens space. That question alone, asked consistently, will begin to shift how your team approaches problems — and how you are seen within it."
+    },
+    low:{
+      note:"Your responses suggest that when a problem is framed in a particular way, you tend to work within that frame rather than step back and examine whether the frame itself is the right one. This is not a creativity problem — it is a habits-of-thinking problem. The brain defaults to familiar patterns because they are efficient. But in complex or novel situations, those defaults can lead to solutions that are technically correct but miss what the situation actually needed.",
+      action:"Try a simple exercise this week: take any problem you are currently working on and write down three ways of describing it that are completely different from how you would normally describe it. Not solutions — just different framings of the problem. What changes when you describe it differently? At least one of those framings will open a solution path that the original description closed off."
+    }
+  },
+  strategic_decision_making:{label:"Strategic Decision-Making",
+    high:{
+      note:"Your responses reflect a mature approach to decision-making that balances analytical rigour with practical action. You understand that good decisions require defined criteria, not just strong opinions; that risk needs to be surfaced before commitment, not after; and that stakeholder dynamics are as important to manage as the decision itself. These are not skills that develop quickly — they require experience and deliberate reflection. The fact that you demonstrate them across different types of scenarios suggests they are genuinely embedded in how you think.",
+      action:"Your development edge is making your decision-making process more visible to others. At your level, the way you reach a decision is often as important as the decision itself, because people who observe your process learn from it. Practice articulating your reasoning out loud — not just your conclusion but the trade-offs you considered and the risks you accounted for. This builds trust and develops the people around you simultaneously."
+    },
+    mid:{
+      note:"You make sound decisions in familiar contexts and where the stakes are clear, but when decisions involve significant uncertainty, competing stakeholder interests, or long time horizons, there is a tendency to either over-deliberate — waiting for more certainty than is available — or to move on instinct in ways that bypass important risk considerations. The gap shows up most in novel, high-stakes situations where neither full confidence nor urgency are present.",
+      action:"Develop a simple decision framework that you apply consistently. Before your next significant decision, write down: what is the decision, what criteria matter most, what are the top two risks if you get it wrong, and what would change your mind after committing. This structure does not slow you down — it makes your decisions more defensible and more reversible when they need to be."
+    },
+    low:{
+      note:"Your responses suggest that in complex or high-stakes decisions, there is a tendency either to defer to others rather than forming and committing to a view, or to act on the most available option without fully examining the implications. Both patterns are understandable responses to uncertainty, but both carry costs. Deferring too readily reduces your influence and visibility. Moving too quickly without risk analysis creates decisions that are harder to defend and more likely to need reversing.",
+      action:"Start building your decision confidence in lower-stakes situations. The next time you need to make a workplace decision — however small — take three minutes to write down what you are deciding, what your options are, and what you would do if you were certain. That last question is important: it surfaces your instinct before uncertainty clouds it. Practise trusting that instinct, then checking it against the evidence."
+    }
+  },
+  customer_handling:{label:"Customer Handling",
+    high:{
+      note:"Your responses demonstrate that you understand customer handling as a relational skill as much as a technical one. You know that what an upset or difficult customer needs before anything else is to feel that the person they are speaking to is genuinely present, honest, and capable. You bring that presence — and you are able to hold firm boundaries without losing warmth. This combination is rare and genuinely valuable in any customer-facing or client relationship role.",
+      action:"Your development edge is building this capability in others. If you work with or alongside people who handle customers, begin sharing your approach — not as instruction but through modelling and debrief. After a difficult customer interaction, talk through what you did and why. The patterns you have internalised are worth making explicit."
+    },
+    mid:{
+      note:"You handle customer interactions effectively when the situation is predictable and the customer's frustration is at a manageable level. But when the emotional intensity rises, when the complaint is complex, or when the customer is hostile, there is a tendency to move too quickly to explanation and resolution before the customer has felt genuinely heard. This can inadvertently make difficult situations more difficult, because the customer's primary need in that moment is acknowledgment, not information.",
+      action:"In your next difficult customer interaction, try a simple sequence: first acknowledge the feeling or the impact ('I understand this has been frustrating and I can see why'), then acknowledge the specific failure ('That communication gap should not have happened'), and only then move to resolution. Most people reverse this order. The first two steps take under 30 seconds and significantly change how the rest of the conversation goes."
+    },
+    low:{
+      note:"Your responses suggest that customer interactions, particularly difficult or emotionally charged ones, are handled in ways that are technically appropriate but may not fully address what the customer actually needs. There is often a focus on the procedural — what happened, what will be done — without sufficient attention to the relational — how the customer is experiencing the interaction and whether they feel genuinely seen. Over time, this creates interactions that resolve the immediate issue without rebuilding trust.",
+      action:"Develop one practice: before you respond to any customer complaint, say one thing that acknowledges the impact on them — not an apology for policy, but a recognition of what they specifically experienced. 'I can see why this caused a problem for you today' is different from 'I am sorry for any inconvenience.' The specificity signals that you actually processed what they said. Practise making that distinction in every difficult customer interaction for the next month."
+    }
+  },
+  customer_empathy:{label:"Customer Empathy",
+    high:{
+      note:"Your responses reflect a genuine ability to hold the customer's experience in mind — not just their stated request, but what is behind it, what they are feeling, and what the situation means to them. You respond to the full person rather than just the ticket. This level of attentiveness builds the kind of loyalty and trust that is hard to achieve through policy or product alone, and it signals to customers that they are dealing with an organisation that actually cares.",
+      action:"Your development edge is sustaining this across volume and repetition. Empathy is harder to maintain in the twentieth interaction of the day than in the first. Build a deliberate reset habit: before each customer interaction, take one moment to remind yourself that this customer is having this experience for the first time, even if you have handled it many times before. That reset keeps your empathy from becoming mechanical."
+    },
+    mid:{
+      note:"You demonstrate genuine empathy in interactions where the customer's emotional state is clear and the situation is relationally straightforward. But when customers are composed, brief, or not explicitly expressing distress, there is a tendency to treat the interaction as purely transactional — resolving the stated request without attending to what may be underneath it. Some of the most important empathy opportunities are in those quieter, more controlled interactions.",
+      action:"In your next week of customer interactions, pay specific attention to customers who seem composed but whose situation suggests something significant. A terse message, a brief explanation that carries weight, a request that implies something went wrong — these are the moments where a small acknowledgment can make a disproportionate difference. Practise reading what is not being said."
+    },
+    low:{
+      note:"Your responses suggest that customer interactions are approached primarily as problems to be solved rather than experiences to be understood. This produces efficient responses that may technically resolve the issue while leaving the customer feeling unrecognised. In contexts where customer loyalty, trust, and long-term relationship matter, this gap is significant — because customers who feel understood return; customers who feel processed look for alternatives.",
+      action:"Start with one simple shift: in every customer interaction this week, before you address the request, write down in your own mind — or on paper — one thing about what this customer's experience must have felt like. Not to say it out loud necessarily, but to have thought it. That small act of imagination will change the quality of how you respond, even when your words stay professional and structured."
+    }
+  }
+};
+var FBQs=[
+  {id:"fb1",type:"multi",
+   question:"In one or two words, how would you describe your experience taking this assessment?",
+   inst:"Select all that apply",
+   opts:[
+     {k:"A",v:"Thought-provoking — it made me look at situations I thought I already understood"},
+     {k:"B",v:"Uncomfortable but valuable — it revealed instincts I had not fully examined before"},
+     {k:"C",v:"Realistic — the scenarios felt like situations I have actually been in at work"},
+     {k:"D",v:"Clarifying — it helped me see more clearly how I tend to respond under pressure"},
+     {k:"E",v:"Motivating — it made me want to take my professional development more seriously"},
+     {k:"F",v:"Challenging — the options were not as obvious as I expected them to be"}
+   ]},
+  {id:"fb2",type:"multi",
+   question:"Thinking about how you responded to the scenarios, which of the following is true for you right now?",
+   inst:"Select all that apply",
+   opts:[
+     {k:"A",v:"I answered mostly based on what I know is right, but I am aware that I do not always do this in real situations"},
+     {k:"B",v:"I answered honestly based on how I actually behave at work, even when it was uncomfortable to admit"},
+     {k:"C",v:"Some scenarios made me realise that my instincts in certain situations may not be serving me as well as I thought"},
+     {k:"D",v:"I found myself answering based on how I would like to behave rather than how I actually behave most of the time"}
+   ]},
+  {id:"fb3",type:"single",
+   question:"If a colleague asked you whether to take this assessment, what would you tell them?",
+   inst:"Select one option",
+   opts:[
+     {k:"A",v:"I would recommend it without hesitation — it is one of the most honest mirrors I have held up to my professional behaviour"},
+     {k:"B",v:"I would recommend it and tell them to be ready — the scenarios are realistic and the results do not let you off easily"},
+     {k:"C",v:"I would tell them it is worth doing, especially if they are serious about growing in their career"},
+     {k:"D",v:"I would recommend it to anyone who wants to understand how they actually show up at work, not just how they think they do"},
+     {k:"E",v:"I would say take it, but take it seriously — the value is in being honest with yourself, not just selecting the best-sounding option"}
+   ]},
+  {id:"fb4",type:"multi",
+   question:"Based on your experience of going through the scenarios, what would you most want from a development programme that followed this assessment?",
+   inst:"Select all that apply",
+   opts:[
+     {k:"A",v:"Practical scenarios that show me specifically how to handle the kinds of situations I found difficult here"},
+     {k:"B",v:"Honest, specific feedback on the gap between how I think I behave and how I actually behave"},
+     {k:"C",v:"A structured programme that builds my skills over time rather than a one-off session"},
+     {k:"D",v:"Tools and frameworks I can apply immediately in real workplace situations"},
+     {k:"E",v:"A way to track my growth and see measurable improvement over time"},
+     {k:"F",v:"Content that is directly relevant to my industry and the kind of work I do"}
+   ]},
+  {id:"fb5",type:"opentext",
+   question:"What do you think of this assessment, and how can we improve it?",
+   inst:"Please share in one or two sentences. Your honest feedback helps us make this better."}
+];
+
+function playWarn(){try{var a=new(window.AudioContext||window.webkitAudioContext)();[0,.12,.24].forEach(function(t){var o=a.createOscillator(),g=a.createGain();o.connect(g);g.connect(a.destination);o.frequency.value=880;g.gain.setValueAtTime(.3,a.currentTime+t);g.gain.exponentialRampToValueAtTime(.001,a.currentTime+t+.1);o.start(a.currentTime+t);o.stop(a.currentTime+t+.15);});}catch(e){}}
+function playBell(){try{var a=new(window.AudioContext||window.webkitAudioContext)();var o=a.createOscillator(),g=a.createGain();o.connect(g);g.connect(a.destination);o.frequency.setValueAtTime(1047,a.currentTime);o.frequency.exponentialRampToValueAtTime(440,a.currentTime+.5);g.gain.setValueAtTime(.45,a.currentTime);g.gain.exponentialRampToValueAtTime(.001,a.currentTime+.7);o.start();o.stop(a.currentTime+.7);}catch(e){}}
+
+var S={screen:"cover",qi:0,cdNum:3,answers:{},tv:TIMER_SEC,ti:null,tout:false,lead:{ci:0,ph:"",gender:"",name:"",plevel:"",org:"",email:"",age:""},fba:{},fbi:0,scores:{},timeSpent:[],qStartTime:null};
+
+function startTimer(){
+  clearInterval(S.ti);S.tv=TIMER_SEC;S.tout=false;S.qStartTime=Date.now();
+  S.ti=setInterval(function(){
+    S.tv--;
+    if(S.tv===15)playWarn();
+    if(S.tv<=0){clearInterval(S.ti);S.tout=true;if(!S.answers[S.qi])S.answers[S.qi]={most:null,least:null};recordTimeSpent();playBell();setTimeout(function(){adv();},900);return;}
+    rfTimer();
+  },1000);
+}
+function recordTimeSpent(){
+  if(S.qStartTime){
+    var elapsed=Math.round((Date.now()-S.qStartTime)/1000);
+    S.timeSpent[S.qi]=Math.min(elapsed,TIMER_SEC);
+    S.qStartTime=null;
+  }
+}
+function stopTimer(){clearInterval(S.ti);S.ti=null;}
+function rfTimer(){
+  var e=document.getElementById("tsecs"),i=document.getElementById("ticon"),l=document.getElementById("tlbl");
+  if(!e)return;
+  e.textContent=S.tv+" secs";e.className="t-secs";
+  if(S.tv<=1){e.classList.add("urgent");if(i)i.textContent="⏰";if(l)l.style.color="#cc0000";}
+  else if(S.tv<=15){e.classList.add("warn");if(i){i.textContent="🕐";i.style.color="#0057b7";}e.style.color="#0057b7";if(l)l.style.color="#0057b7";}
+  else{if(i){i.textContent="🕐";i.style.color="#f1801c";}e.style.color="#f1801c";if(l)l.style.color="#f1801c";}
+}
+function adv(){
+  recordTimeSpent();
+  stopTimer();
+  if(S.qi<Qs.length-1){S.qi++;go();startTimer();}
+  else{S.screen="lead";go();}
+}
+function go(){
+  var w=document.getElementById("wrap");if(!w)return;
+  if(S.screen==="cover")w.innerHTML=rCover();
+  else if(S.screen==="countdown")w.innerHTML=rCD();
+  else if(S.screen==="question")w.innerHTML=rQ();
+  else if(S.screen==="lead")w.innerHTML=rLead();
+  else if(S.screen==="feedback")w.innerHTML=rFB();
+  else if(S.screen==="loading")w.innerHTML=rLoad();
+  else if(S.screen==="results")w.innerHTML=rRes();
+}
+function qPick(type,letter){
+  if(S.tout)return;
+  if(!S.answers[S.qi])S.answers[S.qi]={most:null,least:null};
+  var a=S.answers[S.qi],al=document.getElementById("oal");
+  if(type==="most"&&a.least===letter){if(al){al.style.display="block";setTimeout(function(){al.style.display="none";},2000);}return;}
+  if(type==="least"&&a.most===letter){if(al){al.style.display="block";setTimeout(function(){al.style.display="none";},2000);}return;}
+  a[type]=letter;
+  ["a","b","c","d"].forEach(function(l){var c=document.querySelector(".opt-card[data-opt='"+l+"']");if(!c)return;c.classList.remove("hi-most","hi-least");if(a.most===l)c.classList.add("hi-most");if(a.least===l)c.classList.add("hi-least");});
+  document.querySelectorAll(".s-btn[data-type='most']").forEach(function(b){b.classList.toggle("on-most",b.dataset.letter===a.most);});
+  document.querySelectorAll(".s-btn[data-type='least']").forEach(function(b){b.classList.toggle("on-least",b.dataset.letter===a.least);});
+  var cb=document.getElementById("cbtn");if(cb)cb.disabled=!(a.most&&a.least);
+}
+function contQ(){var a=S.answers[S.qi]||{};if(!a.most||!a.least)return;adv();}
+function fbOpenText(val){
+  var fq=FBQs[S.fbi];
+  S.fba[fq.id]=val;
+  var nb=document.getElementById("fbnxt");if(nb)nb.disabled=val.trim().length===0;
+}
+function fbPick(key){
+  var fq=FBQs[S.fbi],isM=fq.type==="multi";
+  if(!S.fba[fq.id])S.fba[fq.id]=[];
+  if(!isM){
+    S.fba[fq.id]=[key];
+    fq.opts.forEach(function(o){var r=document.getElementById("fr"+o.k),l=document.getElementById("fl"+o.k);if(!r||!l)return;if(o.k===key){r.classList.add("fbsel");l.style.background="#d96e14";}else{r.classList.remove("fbsel");l.style.background="#f1801c";}});
+  }else{
+    var p=S.fba[fq.id].indexOf(key);
+    if(p>-1)S.fba[fq.id].splice(p,1);else S.fba[fq.id].push(key);
+    fq.opts.forEach(function(o){var r=document.getElementById("fr"+o.k),l=document.getElementById("fl"+o.k);if(!r||!l)return;var s=S.fba[fq.id].indexOf(o.k)>-1;if(s){r.classList.add("fbsel");l.style.background="#d96e14";}else{r.classList.remove("fbsel");l.style.background="#f1801c";}});
+  }
+  var nb=document.getElementById("fbnxt");if(nb)nb.disabled=S.fba[fq.id].length===0;
+}
+function fbNext(){
+  if(S.fbi<FBQs.length-1){S.fbi++;go();}
+  else{S.scores=calcScores();sendSheets();S.screen="loading";go();setTimeout(function(){var v=document.getElementById("vbtn");if(v)v.style.display="inline-block";},2900);}
+}
+function showRes(){S.screen="results";go();}
+function gPick(g){S.lead.gender=g;document.querySelectorAll(".g-opt").forEach(function(e){e.classList.toggle("gsel",e.dataset.g===g);});}
+
+function fmtTime(secs){var m=Math.floor(secs/60),s=secs%60;return(m>0?m+" min ":"")+s+" sec"+(s!==1?"s":"");}
+function calcTimeMetrics(){
+  var n=Qs.length,total=0;
+  for(var i=0;i<n;i++){total+=(S.timeSpent[i]||0);}
+  var avg=n?Math.round(total/n):0;
+  return{totalTime:total,avgTime:avg,totalFmt:fmtTime(total),avgFmt:avg+" sec/question"};
+}
+function getTimeInsight(avgTimePerQ){
+  if(avgTimePerQ<20){return"You completed scenarios very quickly, which suggests you may be relying on instinct rather than fully processing each situation. While intuition can be valuable, slowing down slightly to read and evaluate each scenario more deliberately may improve the quality of your decisions.";}
+  else if(avgTimePerQ>=25&&avgTimePerQ<=40){return"Your pace reflects a balanced approach between speed and careful thinking. You are taking enough time to understand each scenario while maintaining decision efficiency. This is typically associated with strong, controlled judgment in real-world situations.";}
+  else if(avgTimePerQ>40){return"You are spending more time than average on each scenario, which suggests careful and deliberate thinking. While this can improve accuracy, in fast-paced or high-pressure environments, developing quicker decision-making may be beneficial.";}
+  else{return"Your timing pattern is slightly inconsistent. You may benefit from maintaining a steadier pace, ensuring each scenario receives enough attention without overthinking or rushing.";}
+}
+function calcScores(){
+  var raw={},mx={};
+  Object.keys(CM).forEach(function(k){raw[k]=0;mx[k]=0;});
+  Qs.forEach(function(q,i){var a=S.answers[i]||{};q.comps.forEach(function(c){mx[c]=(mx[c]||0)+4;var s=0;if(a.most===q.most)s+=2;if(a.least===q.least)s+=2;raw[c]=(raw[c]||0)+s;});});
+  var out={};
+  Object.keys(CM).forEach(function(k){out[k]=mx[k]?Math.round((raw[k]/mx[k])*100):null;});
+  var vs=[];Object.keys(out).forEach(function(k){if(out[k]!==null)vs.push(out[k]);});
+  out._ov=vs.length?Math.round(vs.reduce(function(a,b){return a+b;},0)/vs.length):0;
+  return out;
+}
+function getFBText(fbId, keys){
+  var fq=FBQs.filter(function(q){return q.id===fbId;})[0];
+  if(!fq||!keys||!keys.length)return"";
+  if(typeof keys==="string")return keys; // open text
+  return keys.map(function(k){
+    var opt=fq.opts&&fq.opts.filter(function(o){return o.k===k;})[0];
+    return opt?opt.v:k;
+  }).join("; ");
+}
+function sendSheets(){
+  if(SHEET_URL==="YOUR_APPS_SCRIPT_WEB_APP_URL")return;
+  var sc=S.scores,fb=S.fba,ci=S.lead.ci||0,co=COUNTRIES[ci];
+  var tm=calcTimeMetrics(),insight=getTimeInsight(tm.avgTime);
+  var p=new URLSearchParams({
+    timestamp:new Date().toISOString(),
+    full_name:S.lead.name||"",
+    email:S.lead.email||"",
+    phone:(co?co.c:"")+S.lead.ph,
+    organisation:S.lead.org||"",
+    gender:S.lead.gender||"",
+    age_range:S.lead.age||"",
+    edu_professional_level:S.lead.plevel||"",
+    total_time_secs:String(tm.totalTime),
+    total_time_display:tm.totalFmt,
+    avg_time_per_question:tm.avgFmt,
+    time_insight:insight,
+    score_communication:String(sc.communication!=null?sc.communication:""),
+    score_critical_thinking:String(sc.critical_thinking!=null?sc.critical_thinking:""),
+    score_collaboration:String(sc.collaboration!=null?sc.collaboration:""),
+    score_emotional_intelligence:String(sc.emotional_intelligence!=null?sc.emotional_intelligence:""),
+    score_accountability:String(sc.accountability!=null?sc.accountability:""),
+    score_written_communication:String(sc.written_communication!=null?sc.written_communication:""),
+    score_feedback:String(sc.feedback!=null?sc.feedback:""),
+    score_conflict_resolution:String(sc.conflict_resolution!=null?sc.conflict_resolution:""),
+    score_active_listening:String(sc.active_listening!=null?sc.active_listening:""),
+    score_verbal_communication:String(sc.verbal_communication!=null?sc.verbal_communication:""),
+    score_problem_diagnosis:String(sc.problem_diagnosis!=null?sc.problem_diagnosis:""),
+    score_creative_problem_solving:String(sc.creative_problem_solving!=null?sc.creative_problem_solving:""),
+    score_strategic_decision_making:String(sc.strategic_decision_making!=null?sc.strategic_decision_making:""),
+    score_customer_handling:String(sc.customer_handling!=null?sc.customer_handling:""),
+    score_customer_empathy:String(sc.customer_empathy!=null?sc.customer_empathy:""),
+    overall_score:String(sc._ov),
+    overall_competency_level:sLvl(sc._ov),
+    feedback_q1:getFBText("fb1", fb.fb1||[]),
+    feedback_q2:getFBText("fb2", fb.fb2||[]),
+    feedback_q3:getFBText("fb3", fb.fb3||[]),
+    feedback_q4:getFBText("fb4", fb.fb4||[]),
+    feedback_q5:fb.fb5||""
+  });
+  new Image().src=SHEET_URL+"?"+p.toString();
+}
+
+function submitLead(){
+  var nm=((document.getElementById("fnm")||{}).value||"").trim(),
+      plevel=((document.getElementById("fplevel")||{}).value||"").trim(),
+      org=((document.getElementById("forg")||{}).value||"").trim(),
+      em=((document.getElementById("fem")||{}).value||"").trim(),
+      age=((document.getElementById("fage")||{}).value||""),
+      ph=((document.getElementById("fph")||{}).value||"").trim(),
+      err=document.getElementById("ferr");
+
+  if(!nm||!org||!em||!ph){err.style.display="block";err.textContent="Please complete all required fields.";return;}
+  if(!S.lead.gender){err.style.display="block";err.textContent="Please select your gender.";return;}
+  if(!age){err.style.display="block";err.textContent="Please select your age range.";return;}
+  if(!plevel){err.style.display="block";err.textContent="Please select your educational / professional level.";return;}
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){err.style.display="block";err.textContent="Please enter a valid email address.";return;}
+
+  var ci=S.lead.ci||0,co=COUNTRIES[ci],rawPh=ph;
+  // Block any non-digit characters (letters, symbols etc)
+  if(/[a-zA-Z]/.test(rawPh)){err.style.display="block";err.textContent="Phone number must contain digits only — no letters or symbols.";return;}
+  var digs=rawPh.replace(/\D/g,"");
+  if(digs.length<(co?co.min:6)||digs.length>(co?co.max:15)){err.style.display="block";err.textContent="Phone number length is invalid for "+(co?co.n:"your country")+". "+( co?co.hint:"");return;}
+  if(co&&co.re&&!co.re.test(digs)){err.style.display="block";err.textContent="Phone number format is not recognised for "+(co.n)+". "+(co.hint||"Please check the number you entered.");return;}
+  err.style.display="none";
+  S.lead.name=nm;S.lead.plevel=plevel;S.lead.org=org;S.lead.email=em;S.lead.age=age;S.lead.ph=ph;
+  S.screen="feedback";S.fbi=0;go();
+}
+
+function joinProgramme(){window.open(PROGRAMME_URL,"_blank");}
+
+// RENDER FUNCTIONS
+function rCover(){
+  return'<div class="card cover"><div class="cover-brand">Bridge the Breach Institute</div><h1>Workplace Competency Assessment</h1><p class="cover-tag">A structured competency-based evaluation measuring how individuals apply critical workplace skills in real scenarios, providing data-driven insight into strengths, development gaps, and areas for growth.</p><div class="cover-desc"><p>This assessment is not a personality test and not a quiz. There are no obvious right or wrong answers. We want to understand how you naturally think and behave, not the answer you think we are looking for.</p><p>Each question places you inside a detailed workplace scenario and asks you to identify the <span class="hl">MOST EFFECTIVE</span> response and the <span class="hl">LEAST EFFECTIVE</span> response from four options. Read carefully and trust your instinct.</p><p>At the end, you will receive a personalised workplace competency report that identifies your current strengths, specific development gaps, and practical recommendations for your growth.</p></div><div class="cover-rules"><div class="rule-box"><div class="ri">⏱️</div><div class="rt"><b>50 seconds per question</b>The timer begins the moment each question loads. If time runs out, the question is submitted automatically.</div></div><div class="rule-box"><div class="ri">🎯</div><div class="rt"><b>Two selections per question</b>Choose one MOST EFFECTIVE and one LEAST EFFECTIVE option. Continue activates only when both are selected.</div></div><div class="rule-box"><div class="ri">📋</div><div class="rt"><b>Scenario-based format</b>Each question is grounded in a realistic professional situation. Read the full scenario before selecting.</div></div><div class="rule-box"><div class="ri">📊</div><div class="rt"><b>Your report awaits</b>After completing all questions you receive a detailed personalised competency report with your scores, insights, and development focus areas.</div></div></div><button class="start-btn" onclick="startA()">Start Assessment</button></div>';
+}
+
+function rCD(){
+  var n=S.cdNum,d=n>0?String(n):"GO!",s=n>0?"Get ready...":"Here we go";
+  return'<div class="card cd-wrap"><div class="cd-lbl">Assessment starting in</div><div class="cd-n">'+d+'</div><div class="cd-sub">'+s+'</div></div>';
+}
+
+function rQ(){
+  var q=Qs[S.qi],pct=Math.round((S.qi/Qs.length)*100),a=S.answers[S.qi]||{},ls=["a","b","c","d"],oc="",mb="",lb="";
+  ls.forEach(function(l){
+    var cls="opt-card"+(a.most===l?" hi-most":"")+(a.least===l?" hi-least":"");
+    oc+='<div class="'+cls+'" data-opt="'+l+'"><div class="opt-badge">'+l.toUpperCase()+'</div><div class="opt-text">'+q.opts[l]+'</div></div>';
+    mb+='<button class="s-btn'+(a.most===l?" on-most":"")+'" data-type="most" data-letter="'+l+'" onclick="qPick(\'most\',\''+l+'\')">'+l.toUpperCase()+'</button>';
+    lb+='<button class="s-btn'+(a.least===l?" on-least":"")+'" data-type="least" data-letter="'+l+'" onclick="qPick(\'least\',\''+l+'\')">'+l.toUpperCase()+'</button>';
+  });
+  var can=!!(a.most&&a.least),isL=S.qi===Qs.length-1;
+  return'<div class="card"><div class="q-prog"><div class="q-prog-fill" style="width:'+pct+'%"></div></div><div class="q-hdr"><div class="q-badge">Question '+(S.qi+1)+' of '+Qs.length+'</div><div class="q-scenario">'+q.scenario+'</div></div><div class="q-body"><div class="opts-grid">'+oc+'</div></div><div class="opt-alert" id="oal">You cannot select the same option for both.</div><div class="sel-area"><div class="sel-row"><span class="sel-lbl">Choose the MOST EFFECTIVE option</span><div class="sel-btns">'+mb+'</div></div><div class="sel-row"><span class="sel-lbl">Choose the LEAST EFFECTIVE option</span><div class="sel-btns">'+lb+'</div></div></div><div class="q-foot"><div class="timer-wrap"><span class="t-icon" id="ticon">🕐</span><div><span class="t-lbl" id="tlbl">Time Remaining</span><span class="t-secs" id="tsecs">'+S.tv+' secs</span></div></div><button class="cont-btn" id="cbtn" '+(can?"":"disabled ")+'onclick="contQ()">'+(isL?"Submit":"Continue")+'</button></div></div>';
+}
+
+function rLead(){
+  var ci=S.lead.ci||0,co="",ages=["16-20","21-24","25-30","31-35","36-40","41-45","46-50","51+"],ao='<option value="">Select your age range</option>';
+  COUNTRIES.forEach(function(c,i){co+='<option value="'+i+'"'+(i===ci?" selected":"")+'>'+c.f+' '+c.n+' ('+c.c+')</option>';});
+  ages.forEach(function(a){ao+='<option value="'+a+'"'+(S.lead.age===a?" selected":"")+'>'+(a==="51+"?"51 and above":a)+'</option>';});
+  var gm=S.lead.gender==="Male"?" gsel":"",gf=S.lead.gender==="Female"?" gsel":"";
+  var plevels=["Student","Final Year Student","Graduate","NYSC Member","Entry-Level Professional","Mid-Level Professional","C-Suite Executive / Senior Leader"];
+  var plo='<option value="">Select your level</option>';
+  plevels.forEach(function(p){plo+='<option value="'+p+'"'+(S.lead.plevel===p?" selected":"")+'>'+p+'</option>';});
+  var curCo=COUNTRIES[S.lead.ci||0];
+  return'<div class="card lead-wrap"><h2>Almost there — view your results</h2><p class="lead-sub">Enter your details to access your personalised Workplace Competency Assessment report. All fields are required.</p><div class="f-grid"><div><label class="f-label">Full Name</label><input id="fnm" class="f-input" type="text" placeholder="e.g. Adaeze Okonkwo" value="'+(S.lead.name||"")+'"></div><div><label class="f-label">Educational / Professional Level</label><select id="fplevel" class="f-input" onchange="S.lead.plevel=this.value">'+plo+'</select></div><div><label class="f-label">Organisation or Institution</label><input id="forg" class="f-input" type="text" placeholder="e.g. Pinnacle Advisory / Obafemi Awolowo University" value="'+(S.lead.org||"")+'"></div><div><label class="f-label">Email Address</label><input id="fem" class="f-input" type="email" placeholder="e.g. adaeze@company.com" value="'+(S.lead.email||"")+'"></div><div><label class="f-label">Gender</label><div class="gender-row"><div class="g-opt'+gm+'" data-g="Male" onclick="gPick(\'Male\')"><span>👨</span><span class="g-lbl">Male</span></div><div class="g-opt'+gf+'" data-g="Female" onclick="gPick(\'Female\')"><span>👩</span><span class="g-lbl">Female</span></div></div></div><div><label class="f-label">Age Range</label><select id="fage" class="f-input" onchange="S.lead.age=this.value">'+ao+'</select></div><div class="f-full"><label class="f-label">Phone Number</label><div class="phone-row"><select id="fco" class="flag-sel" onchange="S.lead.ci=parseInt(this.value);document.getElementById(\'phhint\').textContent=COUNTRIES[S.lead.ci].hint||\'\'">'+co+'</select><input id="fph" class="phone-inp" type="tel" placeholder="Enter number without country code" value="'+(S.lead.ph||"")+'"></div><div class="f-hint" id="phhint">'+(curCo?curCo.hint:"")+'</div></div></div><div id="ferr" class="f-err"></div><button class="f-submit" onclick="submitLead()">Continue</button><p class="f-note">Your details are used to generate your report and send you resources for your development.</p></div>';
+}
+
+function rFB(){
+  var fq=FBQs[S.fbi],pk=S.fba[fq.id]||[],isL=S.fbi===FBQs.length-1,rem=FBQs.length-S.fbi,rows="";
+  if(fq.type==="opentext"){
+    var curVal=(typeof pk==="string"?pk:"");
+    rows='<textarea id="fb5txt" class="f-input" style="min-height:110px;resize:vertical;line-height:1.6" placeholder="Type your thoughts here..." oninput="fbOpenText(this.value)">'+curVal+'</textarea>';
+    var has=curVal.trim().length>0;
+    return'<div class="card fb-wrap"><div class="fb-step">Feedback Question '+(S.fbi+1)+' of '+FBQs.length+'</div><div class="fb-almost">✓ Last one! Your report is ready after this</div><div class="fb-q">'+fq.question+'</div><div class="fb-inst">'+fq.inst+'</div>'+rows+'<div class="fb-foot"><button id="fbnxt" class="fb-nxt" '+(has?"":"disabled ")+'onclick="fbNext()">See My Results</button></div></div>';
+  }
+  var has=pk.length>0;
+  fq.opts.forEach(function(o){var s=pk.indexOf(o.k)>-1;rows+='<div id="fr'+o.k+'" class="fb-row'+(s?" fbsel":"")+'" onclick="fbPick(\''+o.k+'\')" style="cursor:pointer"><div id="fl'+o.k+'" class="fb-ltr" style="background:'+(s?"#d96e14":"#f1801c")+'">'+o.k+'</div><div class="fb-txt">'+o.v+'</div></div>';});
+  return'<div class="card fb-wrap"><div class="fb-step">Feedback Question '+(S.fbi+1)+' of '+FBQs.length+'</div><div class="fb-almost">✓ Just '+rem+' quick question'+(rem!==1?'s':'')+' and your report is ready</div><div class="fb-q">'+fq.question+'</div><div class="fb-inst">'+fq.inst+'</div>'+rows+'<div class="fb-foot"><button id="fbnxt" class="fb-nxt" '+(has?"":"disabled ")+'onclick="fbNext()">'+(isL?"See My Results":"Next")+'</button></div></div>';
+}
+
+function rLoad(){
+  return'<div class="card load-wrap"><h2>Feedback Gotten. Thank You!</h2><div class="spinner"></div><div class="load-bar"><div class="load-fill"></div></div><p class="load-cap">Computing your competency report...</p><button id="vbtn" class="view-btn" style="display:none" onclick="showRes()">View My Results</button></div>';
+}
+
+// CHANGE 5: Level ladder — removed the two subtitle lines beneath it
+function rLevelLadder(score){
+  var idx=sLvlIdx(score);
+  var html='<div class="level-ladder">';
+  LEVELS.forEach(function(lv,i){
+    var isActive=(i===idx);
+    var isPassed=(i<idx);
+    if(i>0){html+='<div class="ll-connector'+(isPassed||isActive?' passed':'')+'"></div>';}
+    html+='<div class="ll-step">';
+    html+='<div class="ll-dot'+(isActive?' active':isPassed?' passed':'')+'">'+lv.label.charAt(0)+'</div>';
+    html+='<div class="ll-name'+(isActive?' active':'')+'">'+lv.label+'</div>';
+    html+='</div>';
+  });
+  html+='</div>';
+  // REMOVED: the two subtitle lines ("Your current level is highlighted · Levels progress left to right")
+  return html;
+}
+
+function rRes(){
+  var sc=S.scores,ov=sc._ov,oc=sCol(ov),lv=sLvl(ov),ti=sTier(ov),dt=new Date().toLocaleDateString("en-NG",{year:"numeric",month:"long",day:"numeric"});
+  var tm=calcTimeMetrics(),insight=getTimeInsight(tm.avgTime);
+  var om={
+    high:"Your overall score of "+ov+"% places you in the "+lv+" band, reflecting genuine behavioral competency across the scenarios assessed. You demonstrate the kind of professional judgment, communication, and self-awareness that allows you to navigate complex workplace situations effectively. This is a strong foundation. Your detailed dimension breakdown below will show you exactly where you are performing at your best and where targeted development will take you further.",
+    mid:"Your overall score of "+ov+"% places you in the "+lv+" band. This score reflects real capability in several areas alongside clear patterns where your responses under pressure, in conflict, or in difficult communication situations reveal development opportunities. These are not character issues. They are behavioral patterns, and behavioral patterns change with deliberate practice. Your dimension breakdown below gives you a precise picture of where to focus.",
+    low:"Your overall score of "+ov+"% places you in the "+lv+" band. This result is not a verdict on your ability or your potential. It is an honest picture of where your behavioral instincts currently sit in relation to what high-level professional performance looks like in these kinds of situations. Every competency you see below can be developed. The question is whether you are willing to engage with the specific patterns this assessment has revealed. Your dimension breakdown below tells you exactly where to start."
+  };
+  var dh="";
+  Object.keys(CM).forEach(function(k){
+    var m=CM[k],v=sc[k];if(v===null||v===undefined)return;
+    var c=sCol(v),t=sTier(v),f=m[t];
+    dh+='<div class="comp-card"><div class="comp-top"><span class="comp-name">'+m.label+'</span><span class="comp-pill" style="background:'+c.pill+';color:'+c.pt+'">'+v+'%</span></div><div class="c-bar-bg"><div class="c-bar-fill" style="width:'+v+'%;background:'+c.bar+'"></div></div><div class="comp-note">'+f.note+'</div><div class="comp-dev"><span class="comp-dev-lbl">Development Focus</span>'+f.action+'</div></div>';
+  });
+  var timePanelHtml='<div style="background:#f7f6f2;border-radius:9px;padding:1rem 1.1rem;margin-bottom:1.25rem;border:1.5px solid #eaecec"><div style="font-size:.7rem;font-weight:700;color:#f1801c;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.6rem">⏱ Time &amp; Behavioural Insight</div><div style="display:flex;gap:1.5rem;flex-wrap:wrap;margin-bottom:.7rem"><div><div style="font-size:.72rem;color:#888;font-weight:600">Total Time</div><div style="font-size:1rem;font-weight:700;color:#1a1a1a">'+tm.totalFmt+'</div></div><div><div style="font-size:.72rem;color:#888;font-weight:600">Average Per Question</div><div style="font-size:1rem;font-weight:700;color:#1a1a1a">'+tm.avgFmt+'</div></div></div><div style="font-size:.82rem;color:#444;line-height:1.7">'+insight+'</div></div>';
+  return'<div class="card"><div class="res-hdr"><div><div class="res-hdr-brand">'+CO_NAME+'</div><div class="res-hdr-sub">Workplace Competency Assessment Report</div></div><div class="res-hdr-date">'+dt+'</div></div><div class="res-body"><div class="watermark">Bridge the Breach</div><div class="res-content"><div class="res-hero"><div class="ov-ring" style="background:'+oc.bg+'"><span class="ov-pct" style="color:'+oc.txt+'">'+ov+'%</span><span class="ov-lbl">'+lv+'</span></div><div class="ov-info" style="flex:1"><h3>'+(S.lead.name||"")+(S.lead.plevel?" &nbsp;|&nbsp; "+S.lead.plevel:"")+'</h3><div class="ov-meta">'+(S.lead.org||"")+(S.lead.gender?" &middot; "+S.lead.gender:"")+(S.lead.age?" &middot; Age: "+S.lead.age:"")+'</div><p>'+om[ti]+'</p>'+rLevelLadder(ov)+'</div></div>'+timePanelHtml+'<div class="comp-list">'+dh+'</div><div class="res-cta"><h3>Ready To Close These Gaps?</h3><p>'+CO_NAME+' offers structured competency development programs built around the exact skills assessed here, combining micro-learning, realistic simulations, and coaching to drive lasting behavioral change.</p><div class="cta-row"><button class="btn-pdf" onclick="dlPDF()">Download My Report</button><a class="btn-join" href="'+PROGRAMME_URL+'" target="_blank">Join Our Competency Development Program</a><a class="btn-join" href="mailto:'+CO_EMAIL+'" style="border-color:#f1801c;color:#f1801c">Talk to Our Team</a></div></div><div class="res-foot"><div class="res-foot-name">'+CO_NAME+'</div><div class="res-foot-desc">We help organizations build the conditions for sustained high performance and develop the people who work within those conditions.</div><div class="res-foot-services">Performance Consulting &middot; Competency Development &middot; Corporate Training</div><div class="res-foot-contact">'+CO_WEB+' &middot; '+CO_EMAIL+'</div></div></div></div></div>';
+}
+
+// PDF helper: draw watermark on current page
+function pdfWatermark(doc,pw){
+  doc.saveGraphicsState();
+  doc.setGState(new doc.GState({opacity:0.05}));
+  doc.setFont("helvetica","bold");doc.setFontSize(38);doc.setTextColor("#f1801c");
+  for(var wy=40;wy<300;wy+=80){doc.text("Bridge the Breach",pw/2,wy,{align:"center",angle:35});}
+  doc.restoreGraphicsState();
+}
+
+function dlPDF(){
+  var jsPDF=window.jspdf.jsPDF,doc=new jsPDF({orientation:"portrait",unit:"mm",format:"a4"}),ml=15,pw=210,cw=pw-30,y=0;
+  var sc=S.scores,ov=sc._ov,dt=new Date().toLocaleDateString("en-NG",{year:"numeric",month:"long",day:"numeric"}),oc=sCol(ov),lv=sLvl(ov),ti=sTier(ov);
+  var om={
+    high:"Overall: "+ov+"% ("+lv+"). Your score reflects genuine behavioral competency. You demonstrate professional judgment and self-awareness in complex workplace situations. Your dimension breakdown shows precisely where to focus to move from strong to exceptional.",
+    mid:"Overall: "+ov+"% ("+lv+"). Your score reflects real capability alongside clear behavioral patterns that can be strengthened. These are not character issues. They are patterns, and patterns change with deliberate practice. Your dimension breakdown gives you a precise picture of where to focus.",
+    low:"Overall: "+ov+"% ("+lv+"). This result is not a verdict on your potential. It is an honest picture of where your behavioral instincts currently sit. Every competency below can be developed. Your dimension breakdown tells you exactly where to start."
+  };
+
+  // WATERMARK — first page
+  pdfWatermark(doc,pw);
+
+  // HEADER
+  doc.setFillColor("#f1801c");doc.rect(0,0,pw,22,"F");
+  doc.setFont("helvetica","bold");doc.setFontSize(14);doc.setTextColor("#ffffff");doc.text(CO_NAME,ml,12);
+  doc.setFont("helvetica","normal");doc.setFontSize(8.5);doc.text("Workplace Competency Assessment Report",ml,19);doc.text(dt,pw-15,12,{align:"right"});y=27;
+
+  // LEARNER
+  doc.setFillColor("#f7f6f2");doc.roundedRect(ml,y,cw,18,2,2,"F");
+  doc.setFont("helvetica","bold");doc.setFontSize(10);doc.setTextColor("#1a1a1a");doc.text(S.lead.name||"",ml+4,y+7);
+  doc.setFont("helvetica","normal");doc.setFontSize(8.5);doc.setTextColor("#555");
+  var il=[S.lead.org,S.lead.plevel||"",S.lead.gender,S.lead.age?"Age: "+S.lead.age:""].filter(function(x){return x;}).join("  |  ");
+  doc.splitTextToSize(il,cw-8).forEach(function(ln,i){doc.text(ln,ml+4,y+13+(i*4));});y+=23;
+
+  // OVERALL
+  var omL=doc.splitTextToSize(om[ti],cw-30),obH=Math.max(24,8+(omL.length*4.5)+4);
+  doc.setFillColor("#f7f6f2");doc.roundedRect(ml,y,cw,obH,2,2,"F");
+  doc.setFillColor(oc.bg);doc.circle(ml+13,y+(obH/2),10,"F");
+  doc.setFont("helvetica","bold");doc.setFontSize(14);doc.setTextColor(oc.txt);doc.text(ov+"%",ml+13,y+(obH/2)+2,{align:"center"});
+  doc.setFont("helvetica","normal");doc.setFontSize(7);doc.setTextColor("#888");doc.text(lv,ml+13,y+(obH/2)+7,{align:"center"});
+  doc.setFont("helvetica","bold");doc.setFontSize(9);doc.setTextColor("#1a1a1a");doc.text("Overall Competency Score",ml+27,y+7);
+  doc.setFont("helvetica","normal");doc.setFontSize(8.5);doc.setTextColor("#333");
+  var omy=y+13;omL.forEach(function(ln){doc.text(ln,omy===y+13?ml+27:ml+27,omy);omy+=4.5;});y+=obH+4;
+
+  // LEVEL LADDER in PDF — CHANGE 5: no subtitle text in PDF either (already wasn't rendering, keeping consistent)
+  var ladderH=16,ladderY=y;
+  if(y+ladderH>282){doc.addPage();pdfWatermark(doc,pw);y=15;ladderY=y;}
+  doc.setFillColor("#f7f6f2");doc.roundedRect(ml,ladderY,cw,ladderH,2,2,"F");
+  doc.setFont("helvetica","bold");doc.setFontSize(7);doc.setTextColor("#f1801c");
+  doc.text("COMPETENCY LEVELS",ml+4,ladderY+5);
+  var stepW=(cw-8)/LEVELS.length,lvIdx=sLvlIdx(ov);
+  LEVELS.forEach(function(lev,i){
+    var cx=ml+4+(i*stepW)+(stepW/2);
+    var isAct=(i===lvIdx),isPast=(i<lvIdx);
+    if(isAct){doc.setFillColor("#f1801c");}else if(isPast){doc.setFillColor("#fad4ad");}else{doc.setFillColor("#e0e0e0");}
+    doc.circle(cx,ladderY+9,2.5,"F");
+    doc.setFont("helvetica",isAct?"bold":"normal");
+    doc.setFontSize(isAct?6.5:6);
+    doc.setTextColor(isAct?"#f1801c":isPast?"#555":"#999");
+    doc.text(lev.label,cx,ladderY+14.5,{align:"center"});
+    if(i<LEVELS.length-1){
+      var lineX=cx+2.5,nextCx=ml+4+((i+1)*stepW)+(stepW/2)-2.5;
+      doc.setDrawColor(isPast?"#fad4ad":"#e0e0e0");doc.setLineWidth(.5);
+      doc.line(lineX,ladderY+9,nextCx,ladderY+9);
+    }
+  });
+  y+=ladderH+5;
+
+  // TIME & BEHAVIOURAL INSIGHT
+  var tm=calcTimeMetrics(),tmInsight=getTimeInsight(tm.avgTime);
+  var insightLines=doc.setFont("helvetica","normal").setFontSize(8.5)&&doc.splitTextToSize(tmInsight,cw-14);
+  var tiH=7+6+6+(insightLines.length*5)+6;
+  if(y+tiH>282){doc.addPage();pdfWatermark(doc,pw);y=15;}
+  doc.setFillColor("#f7f6f2");doc.roundedRect(ml,y,cw,tiH,2,2,"F");
+  doc.setFillColor("#f1801c");doc.roundedRect(ml,y,2.5,tiH,0,0,"F");
+  doc.setFont("helvetica","bold");doc.setFontSize(7);doc.setTextColor("#f1801c");
+  doc.text("TIME & BEHAVIOURAL INSIGHT",ml+6,y+5.5);
+  doc.setFont("helvetica","normal");doc.setFontSize(8);doc.setTextColor("#555");
+  doc.text("Total Time: "+tm.totalFmt+"   |   Average Per Question: "+tm.avgFmt,ml+6,y+12);
+  doc.setFontSize(8.5);doc.setTextColor("#333");
+  var tiy=y+20;
+  insightLines.forEach(function(ln){doc.text(ln,ml+6,tiy);tiy+=5;});
+  y+=tiH+5;
+  Object.keys(CM).forEach(function(k){
+    var m=CM[k],v=sc[k];if(v===null||v===undefined)return;
+    var c=sCol(v),t=sTier(v),f=m[t];doc.setFontSize(8.5);
+    var nL=doc.splitTextToSize(f.note,cw-8),aL=doc.splitTextToSize(f.action,cw-14);
+    var abH=7+(aL.length*4.5)+6,ch=9+5+4+(nL.length*4.5)+5+abH+5;
+    if(y+ch>282){doc.addPage();pdfWatermark(doc,pw);y=15;}
+    doc.setDrawColor("#e0e0e0");doc.setLineWidth(.4);doc.roundedRect(ml,y,cw,ch,2,2,"S");
+    doc.setFont("helvetica","bold");doc.setFontSize(10);doc.setTextColor("#1a1a1a");doc.text(m.label,ml+4,y+8);
+    var pw2=18,px=ml+cw-pw2-4;
+    doc.setFillColor(c.pill);doc.roundedRect(px,y+2,pw2,7,2,2,"F");
+    doc.setFont("helvetica","bold");doc.setFontSize(8.5);doc.setTextColor(c.pt);doc.text(v+"%",px+pw2/2,y+7.2,{align:"center"});
+    var barY=y+11;doc.setFillColor("#eee");doc.roundedRect(ml+4,barY,cw-8,2.5,1,1,"F");
+    if(v>0){doc.setFillColor(c.bar);doc.roundedRect(ml+4,barY,Math.max(1,(cw-8)*v/100),2.5,1,1,"F");}
+    var ty=barY+8;doc.setFont("helvetica","normal");doc.setFontSize(8.5);doc.setTextColor("#333");
+    nL.forEach(function(ln){doc.text(ln,ml+4,ty);ty+=4.5;});ty+=4;
+    doc.setFillColor("#f7f6f2");doc.roundedRect(ml+4,ty,cw-8,abH,2,2,"F");
+    doc.setFillColor("#f1801c");doc.roundedRect(ml+4,ty,2.5,abH,0,0,"F");
+    doc.setFont("helvetica","bold");doc.setFontSize(7.5);doc.setTextColor("#f1801c");doc.text("DEVELOPMENT FOCUS",ml+10,ty+5.5);
+    doc.setFont("helvetica","normal");doc.setFontSize(8.5);doc.setTextColor("#1a1a1a");
+    var ay=ty+11;aL.forEach(function(ln){doc.text(ln,ml+10,ay);ay+=4.5;});
+    y+=ch+4;
+  });
+
+  // FOOTER
+  if(y>272){doc.addPage();pdfWatermark(doc,pw);y=15;}y+=4;
+  doc.setDrawColor("#f1801c");doc.setLineWidth(.8);doc.line(ml,y,ml+cw,y);y+=6;
+  doc.setFont("helvetica","bold");doc.setFontSize(11);doc.setTextColor("#f1801c");doc.text(CO_NAME,ml,y);y+=5;
+  doc.setFont("helvetica","normal");doc.setFontSize(8);doc.setTextColor("#555");
+  doc.text("We help organizations build the conditions for sustained high performance and develop the people who work within those conditions.",ml,y);y+=5;
+  doc.setTextColor("#888");doc.text("Performance Consulting  |  Competency Development  |  Corporate Training",ml,y);y+=5;
+  doc.setTextColor("#999");doc.text(CO_WEB+"  |  "+CO_EMAIL,ml,y);
+
+  doc.save("BTB-Workplace-Competency-Report-"+(S.lead.name||"Report").replace(/\s+/g,"-")+".pdf");
+}
+
+function startA(){
+  // CHANGE 6: Reshuffle questions every time the assessment starts
+  Qs=shuffle(QsSource);
+  S.screen="countdown";S.cdNum=3;go();
+  var t=setInterval(function(){
+    S.cdNum--;
+    if(S.cdNum<0){clearInterval(t);S.screen="question";S.qi=0;go();startTimer();}
+    else go();
+  },1000);
+}
+go();
+</script>
+</body>
+</html>
