@@ -622,28 +622,55 @@ var FBQs=[
    inst:"Please share in one or two sentences. Your honest feedback helps us make this better."}
 ];
 
-// Shared AudioContext — created once, reused, unlocked on first user tap (required for iOS & Android)
-var _AC=null;
+// Shared AudioContext — created once and unlocked on first user tap
+var _ac=null;
 function getAC(){
-  if(!_AC){_AC=new(window.AudioContext||window.webkitAudioContext)();}
-  if(_AC.state==="suspended"){_AC.resume();}
-  return _AC;
+  if(!_ac){
+    try{_ac=new(window.AudioContext||window.webkitAudioContext)();}catch(e){return null;}
+  }
+  // Resume if suspended (iOS suspends until a gesture)
+  if(_ac.state==="suspended"){try{_ac.resume();}catch(e){}}
+  return _ac;
 }
-function _unlockAudio(){
+// Call this on every user interaction so audio is always ready
+function unlockAudio(){
+  var ac=getAC();
+  if(ac&&ac.state==="suspended"){
+    ac.resume().then(function(){
+      // Play a silent buffer to fully unlock on iOS
+      try{
+        var buf=ac.createBuffer(1,1,22050);
+        var src=ac.createBufferSource();
+        src.buffer=buf;src.connect(ac.destination);src.start(0);
+      }catch(e){}
+    });
+  }
+}
+function playWarn(){
   try{
-    var ac=getAC();
-    var buf=ac.createBuffer(1,1,22050);
-    var src=ac.createBufferSource();
-    src.buffer=buf;src.connect(ac.destination);src.start(0);
+    var a=getAC();if(!a)return;
+    [0,.12,.24].forEach(function(t){
+      var o=a.createOscillator(),g=a.createGain();
+      o.connect(g);g.connect(a.destination);
+      o.frequency.value=880;
+      g.gain.setValueAtTime(.35,a.currentTime+t);
+      g.gain.exponentialRampToValueAtTime(.001,a.currentTime+t+.15);
+      o.start(a.currentTime+t);o.stop(a.currentTime+t+.2);
+    });
   }catch(e){}
-  document.removeEventListener("touchstart",_unlockAudio);
-  document.removeEventListener("mousedown",_unlockAudio);
 }
-document.addEventListener("touchstart",_unlockAudio,{passive:true});
-document.addEventListener("mousedown",_unlockAudio,{passive:true});
-
-function playWarn(){try{var a=getAC();[0,.12,.24].forEach(function(t){var o=a.createOscillator(),g=a.createGain();o.connect(g);g.connect(a.destination);o.frequency.value=880;g.gain.setValueAtTime(.3,a.currentTime+t);g.gain.exponentialRampToValueAtTime(.001,a.currentTime+t+.1);o.start(a.currentTime+t);o.stop(a.currentTime+t+.15);});}catch(e){}}
-function playBell(){try{var a=getAC();var o=a.createOscillator(),g=a.createGain();o.connect(g);g.connect(a.destination);o.frequency.setValueAtTime(1047,a.currentTime);o.frequency.exponentialRampToValueAtTime(440,a.currentTime+.5);g.gain.setValueAtTime(.45,a.currentTime);g.gain.exponentialRampToValueAtTime(.001,a.currentTime+.7);o.start();o.stop(a.currentTime+.7);}catch(e){}}
+function playBell(){
+  try{
+    var a=getAC();if(!a)return;
+    var o=a.createOscillator(),g=a.createGain();
+    o.connect(g);g.connect(a.destination);
+    o.frequency.setValueAtTime(1047,a.currentTime);
+    o.frequency.exponentialRampToValueAtTime(440,a.currentTime+.6);
+    g.gain.setValueAtTime(.5,a.currentTime);
+    g.gain.exponentialRampToValueAtTime(.001,a.currentTime+.8);
+    o.start();o.stop(a.currentTime+.8);
+  }catch(e){}
+}
 
 var S={screen:"cover",qi:0,cdNum:3,answers:{},tv:TIMER_SEC,ti:null,tout:false,lead:{ci:0,ph:"",gender:"",name:"",plevel:"",org:"",email:"",age:""},fba:{},fbi:0,scores:{},timeSpent:[],qStartTime:null};
 
@@ -688,7 +715,7 @@ function go(){
   else if(S.screen==="loading")w.innerHTML=rLoad();
   else if(S.screen==="results")w.innerHTML=rRes();
 }
-function qPick(type,letter){
+function qPick(type,letter){unlockAudio();
   if(S.tout)return;
   if(!S.answers[S.qi])S.answers[S.qi]={most:null,least:null};
   var a=S.answers[S.qi],al=document.getElementById("oal");
@@ -700,7 +727,7 @@ function qPick(type,letter){
   document.querySelectorAll(".s-btn[data-type='least']").forEach(function(b){b.classList.toggle("on-least",b.dataset.letter===a.least);});
   var cb=document.getElementById("cbtn");if(cb)cb.disabled=!(a.most&&a.least);
 }
-function contQ(){var a=S.answers[S.qi]||{};if(!a.most||!a.least)return;adv();}
+function contQ(){unlockAudio();var a=S.answers[S.qi]||{};if(!a.most||!a.least)return;adv();}
 function fbOpenText(val){
   var fq=FBQs[S.fbi];
   S.fba[fq.id]=val;
@@ -1033,7 +1060,7 @@ function dlPDF(){
   doc.save("BTB-Workplace-Competency-Report-"+(S.lead.name||"Report").replace(/\s+/g,"-")+".pdf");
 }
 
-function startA(){
+function startA(){unlockAudio();
   // CHANGE 6: Reshuffle questions every time the assessment starts
   Qs=shuffle(QsSource);
   S.screen="countdown";S.cdNum=3;go();
