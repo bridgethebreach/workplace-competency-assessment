@@ -622,55 +622,51 @@ var FBQs=[
    inst:"Please share in one or two sentences. Your honest feedback helps us make this better."}
 ];
 
-// Shared AudioContext — created once and unlocked on first user tap
-var _ac=null;
-function getAC(){
-  if(!_ac){
-    try{_ac=new(window.AudioContext||window.webkitAudioContext)();}catch(e){return null;}
-  }
-  // Resume if suspended (iOS suspends until a gesture)
-  if(_ac.state==="suspended"){try{_ac.resume();}catch(e){}}
+// ── MOBILE-SAFE AUDIO ──────────────────────────────────────
+var _ac=null, _warnBuf=null, _bellBuf=null, _audioReady=false;
+
+function _getAC(){
+  if(!_ac){try{_ac=new(window.AudioContext||window.webkitAudioContext)();}catch(e){return null;}}
   return _ac;
 }
-// Call this on every user interaction so audio is always ready
-function unlockAudio(){
-  var ac=getAC();
-  if(ac&&ac.state==="suspended"){
-    ac.resume().then(function(){
-      // Play a silent buffer to fully unlock on iOS
-      try{
-        var buf=ac.createBuffer(1,1,22050);
-        var src=ac.createBufferSource();
-        src.buffer=buf;src.connect(ac.destination);src.start(0);
-      }catch(e){}
-    });
+function _renderWarn(ac){
+  var sr=ac.sampleRate,dur=0.55,buf=ac.createBuffer(1,Math.ceil(sr*dur),sr),d=buf.getChannelData(0);
+  [[0,0.13],[0.20,0.33],[0.40,0.53]].forEach(function(r){
+    for(var i=Math.floor(r[0]*sr);i<Math.floor(r[1]*sr)&&i<d.length;i++){
+      var t=i/sr,env=Math.min((t-r[0])*40,1)*Math.max(1-(t-r[0])*8,0.01);
+      d[i]=Math.sin(2*Math.PI*880*i/sr)*0.4*env;
+    }
+  });
+  return buf;
+}
+function _renderBell(ac){
+  var sr=ac.sampleRate,dur=0.85,buf=ac.createBuffer(1,Math.ceil(sr*dur),sr),d=buf.getChannelData(0);
+  for(var i=0;i<d.length;i++){
+    var t=i/sr,freq=1047*Math.pow(440/1047,t/dur),env=Math.max(1-t*1.1,0.001);
+    d[i]=Math.sin(2*Math.PI*freq*t)*0.5*env;
   }
+  return buf;
 }
-function playWarn(){
-  try{
-    var a=getAC();if(!a)return;
-    [0,.12,.24].forEach(function(t){
-      var o=a.createOscillator(),g=a.createGain();
-      o.connect(g);g.connect(a.destination);
-      o.frequency.value=880;
-      g.gain.setValueAtTime(.35,a.currentTime+t);
-      g.gain.exponentialRampToValueAtTime(.001,a.currentTime+t+.15);
-      o.start(a.currentTime+t);o.stop(a.currentTime+t+.2);
-    });
-  }catch(e){}
+function _playBuf(buf){
+  var ac=_getAC();if(!ac||!buf)return;
+  try{var s=ac.createBufferSource();s.buffer=buf;s.connect(ac.destination);s.start(0);}catch(e){}
 }
-function playBell(){
-  try{
-    var a=getAC();if(!a)return;
-    var o=a.createOscillator(),g=a.createGain();
-    o.connect(g);g.connect(a.destination);
-    o.frequency.setValueAtTime(1047,a.currentTime);
-    o.frequency.exponentialRampToValueAtTime(440,a.currentTime+.6);
-    g.gain.setValueAtTime(.5,a.currentTime);
-    g.gain.exponentialRampToValueAtTime(.001,a.currentTime+.8);
-    o.start();o.stop(a.currentTime+.8);
-  }catch(e){}
+function unlockAudio(){
+  if(_audioReady)return;
+  var ac=_getAC();if(!ac)return;
+  var resume=ac.state==="suspended"?ac.resume():Promise.resolve();
+  resume.then(function(){
+    try{var sb=ac.createBuffer(1,1,22050),ss=ac.createBufferSource();ss.buffer=sb;ss.connect(ac.destination);ss.start(0);}catch(e){}
+    try{_warnBuf=_renderWarn(ac);}catch(e){}
+    try{_bellBuf=_renderBell(ac);}catch(e){}
+    _audioReady=true;
+  });
 }
+document.addEventListener("touchstart",unlockAudio,{once:true,passive:true});
+document.addEventListener("mousedown",unlockAudio,{once:true,passive:true});
+function playWarn(){_playBuf(_warnBuf);}
+function playBell(){_playBuf(_bellBuf);}
+// ── END AUDIO ───────────────────────────────────────────────
 
 var S={screen:"cover",qi:0,cdNum:3,answers:{},tv:TIMER_SEC,ti:null,tout:false,lead:{ci:0,ph:"",gender:"",name:"",plevel:"",org:"",email:"",age:""},fba:{},fbi:0,scores:{},timeSpent:[],qStartTime:null};
 
