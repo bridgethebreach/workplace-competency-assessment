@@ -111,24 +111,24 @@ body{font-family:Arial,Helvetica,sans-serif;background:#e8e8e8;color:#1a1a1a}
 .res-hdr-date{font-size:.72rem;color:rgba(255,255,255,.75)}
 .res-body{padding:1.25rem;position:relative;overflow:hidden}
 .watermark{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-35deg);font-size:5rem;font-weight:900;color:rgba(241,128,28,.06);white-space:nowrap;pointer-events:none;z-index:0;letter-spacing:.05em;text-transform:uppercase}
-.res-content{position:relative;z-index:1}
+.res-content{position:relative;z-index:1;overflow:hidden;max-width:100%}
 .res-hero{background:#f7f6f2;border-radius:10px;padding:1.1rem 1.2rem;margin-bottom:1.25rem;display:flex;align-items:flex-start;gap:1.1rem;flex-wrap:wrap}
 .ov-ring{width:80px;height:80px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0}
 .ov-pct{font-size:1.5rem;font-weight:700;line-height:1}
 .ov-lbl{font-size:.6rem;color:#888;margin-top:2px}
 .ov-info h3{font-size:.9rem;font-weight:700;color:#1a1a1a;margin-bottom:.2rem;word-wrap:break-word;overflow-wrap:break-word}
 .ov-meta{font-size:.74rem;color:#888;margin-bottom:.4rem;word-wrap:break-word}
-.ov-info{flex:1;min-width:0;overflow:hidden}
-.ov-info p{font-size:.83rem;color:#444;line-height:1.7;word-wrap:break-word;overflow-wrap:break-word}
+.ov-info{flex:1;min-width:0;overflow:hidden;word-break:break-word}
+.ov-info p{font-size:.83rem;color:#444;line-height:1.7;word-wrap:break-word;overflow-wrap:break-word;max-width:100%}
 /* Level ladder */
-.level-ladder{display:flex;align-items:center;gap:0;margin:.75rem 0 0;flex-wrap:nowrap;overflow-x:auto}
-.ll-step{display:flex;flex-direction:column;align-items:center;flex:1;min-width:0}
-.ll-dot{width:28px;height:28px;border-radius:50%;border:2px solid #ddd;background:#f0f0f0;display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;color:#999;position:relative;z-index:1;flex-shrink:0}
+.level-ladder{display:flex;align-items:center;gap:0;margin:.75rem 0 0;flex-wrap:nowrap;padding-bottom:1.4rem}
+.ll-step{display:flex;flex-direction:column;align-items:center;flex:1;min-width:0;position:relative}
+.ll-dot{width:24px;height:24px;border-radius:50%;border:2px solid #ddd;background:#f0f0f0;display:flex;align-items:center;justify-content:center;font-size:.55rem;font-weight:700;color:#999;position:relative;z-index:1;flex-shrink:0}
 .ll-dot.active{border-color:#f1801c;background:#f1801c;color:#fff;box-shadow:0 0 0 3px rgba(241,128,28,.2)}
 .ll-dot.passed{border-color:#f1801c;background:#fff8f2;color:#f1801c}
-.ll-name{font-size:.58rem;color:#888;margin-top:3px;text-align:center;white-space:nowrap;font-weight:600;letter-spacing:.02em}
+.ll-name{font-size:.5rem;color:#888;margin-top:4px;text-align:center;font-weight:600;letter-spacing:.01em;white-space:nowrap;transform:rotate(-35deg);transform-origin:top center;display:block;position:absolute;top:24px;width:60px;left:50%;margin-left:-30px}
 .ll-name.active{color:#f1801c;font-weight:700}
-.ll-connector{flex:1;height:2px;background:#ddd;margin-top:-16px;min-width:6px}
+.ll-connector{flex:1;height:2px;background:#ddd;margin-top:-13px;min-width:4px}
 .ll-connector.passed{background:#f1801c}
 .comp-list{display:flex;flex-direction:column;gap:.9rem;margin-bottom:1.25rem}
 .comp-card{border:1.5px solid #eaecec;border-radius:9px;padding:1rem}
@@ -150,6 +150,7 @@ body{font-family:Arial,Helvetica,sans-serif;background:#e8e8e8;color:#1a1a1a}
 .res-foot{text-align:center;padding:.9rem;border-top:1px solid #eee}
 .res-foot-name{font-size:.86rem;font-weight:700;color:#1a1a1a;margin-bottom:.3rem}
 .res-foot-desc{font-size:.7rem;color:#888;line-height:1.7;max-width:440px;margin:0 auto .35rem}
+.res-foot-verify{font-size:.78rem;font-weight:700;color:#f1801c;margin-bottom:.35rem}
 .res-foot-services{font-size:.7rem;color:#999;margin-bottom:.2rem}
 .res-foot-contact{font-size:.7rem;color:#bbb}
 .f-hint{font-size:.7rem;color:#888;margin-top:.25rem;line-height:1.4}
@@ -158,7 +159,7 @@ body{font-family:Arial,Helvetica,sans-serif;background:#e8e8e8;color:#1a1a1a}
 <body>
 <div id="app"><div class="wrap" id="wrap"></div></div>
 <script>
-var SHEET_URL="https://script.google.com/macros/s/AKfycbxLmYLPTvB-Km-w5yoEnfugFeTaJo0E8FSEC2Z6aR02-pHeN8Ix5h3oYPnmKU-43mrK/exec ";
+var SHEET_URL="https://script.google.com/macros/s/AKfycbyZNuUyQ-K96TNsNd045lmdh-3h441-LKoTYMUBoWGCwHj3qteKG3E9RJRzRfIHK6Jy/exec";
 var CO_EMAIL="hello@bridgethebreach.com";
 var CO_NAME="Bridge the Breach";
 var CO_WEB="www.bridgethebreach.com";
@@ -831,7 +832,8 @@ function sendSheets(){
     feedback_q4:getFBText("fb4", fb.fb4||[]),
     feedback_q5:fb.fb5||""
   });
-  new Image().src=SHEET_URL+"?"+p.toString();
+  // Use fetch for reliable data submission
+  fetch(SHEET_URL+"?"+p.toString(),{method:"GET",mode:"no-cors"}).catch(function(){});
 }
 
 function submitLead(){
@@ -946,7 +948,7 @@ function rRes(){
     dh+='<div class="comp-card"><div class="comp-top"><span class="comp-name">'+m.label+'</span><span class="comp-pill" style="background:'+c.pill+';color:'+c.pt+'">'+v+'%</span></div><div class="c-bar-bg"><div class="c-bar-fill" style="width:'+v+'%;background:'+c.bar+'"></div></div><div class="comp-note">'+f.note+'</div><div class="comp-dev"><span class="comp-dev-lbl">Development Focus</span>'+f.action+'</div></div>';
   });
   var timePanelHtml='<div style="background:#f7f6f2;border-radius:9px;padding:1rem 1.1rem;margin-bottom:1.25rem;border:1.5px solid #eaecec"><div style="font-size:.7rem;font-weight:700;color:#f1801c;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.6rem">⏱ Time &amp; Behavioural Insight</div><div style="display:flex;gap:1.5rem;flex-wrap:wrap;margin-bottom:.7rem"><div><div style="font-size:.72rem;color:#888;font-weight:600">Total Time</div><div style="font-size:1rem;font-weight:700;color:#1a1a1a">'+tm.totalFmt+'</div></div><div><div style="font-size:.72rem;color:#888;font-weight:600">Average Per Question</div><div style="font-size:1rem;font-weight:700;color:#1a1a1a">'+tm.avgFmt+'</div></div></div><div style="font-size:.82rem;color:#444;line-height:1.7">'+insight+'</div></div>';
-  return'<div class="card"><div class="res-hdr"><div><div class="res-hdr-brand">'+CO_NAME+'</div><div class="res-hdr-sub">Workplace Competency Assessment Report</div></div><div class="res-hdr-date">'+dt+'</div></div><div class="res-body"><div class="watermark">Bridge the Breach</div><div class="res-content"><div class="res-hero"><div class="ov-ring" style="background:'+oc.bg+'"><span class="ov-pct" style="color:'+oc.txt+'">'+ov+'%</span><span class="ov-lbl">'+lv+'</span></div><div class="ov-info" style="flex:1;min-width:0;overflow:hidden"><h3>'+(S.lead.name||"")+(S.lead.plevel?" &nbsp;|&nbsp; "+S.lead.plevel:"")+'</h3><div class="ov-meta">'+(S.lead.org||"")+(S.lead.gender?" &middot; "+S.lead.gender:"")+(S.lead.age?" &middot; Age: "+S.lead.age:"")+'</div><div class="ov-meta" style="margin-top:.3rem;color:#f1801c;font-weight:700;font-size:.75rem;letter-spacing:.03em">WCA Report ID: '+S.reportId+'</div><p>'+om[ti]+'</p>'+rLevelLadder(ov)+'</div></div>'+timePanelHtml+'<div class="comp-list">'+dh+'</div><div class="res-cta"><h3>Ready To Close These Gaps?</h3><p>'+CO_NAME+' offers structured competency development programs built around the exact skills assessed here, combining micro-learning, realistic simulations, and coaching to drive lasting behavioral change.</p><div class="cta-row"><button class="btn-pdf" onclick="dlPDF()">Download My Report</button><a class="btn-join" href="'+PROGRAMME_URL+'" target="_blank">Join Our Competency Development Program</a><a class="btn-join" href="mailto:hello@bridgethebreach.com?body=Bridge%20the%20Breach%20Team%2C%0A%0AI%20just%20completed%20the%20Workplace%20Competency%20Assessment%20and%20I%20would%20like%20to%20talk%20to%20you%20about%20..." style="border-color:#f1801c;color:#f1801c">Talk to Our Team</a></div></div><div class="res-foot"><div class="res-foot-name">'+CO_NAME+'</div><div class="res-foot-desc">We help organizations build the conditions for sustained high performance and develop the people who work within those conditions.</div><div class="res-foot-services">Performance Consulting &middot; Competency Development &middot; Corporate Training</div><div class="res-foot-contact">'+CO_WEB+' &middot; '+CO_EMAIL+'</div></div></div></div></div>';
+  return'<div class="card"><div class="res-hdr"><div><div class="res-hdr-brand">'+CO_NAME+'</div><div class="res-hdr-sub">Workplace Competency Assessment Report</div></div><div class="res-hdr-date">'+dt+'</div></div><div class="res-body"><div class="watermark">Bridge the Breach</div><div class="res-content"><div class="res-hero"><div class="ov-ring" style="background:'+oc.bg+'"><span class="ov-pct" style="color:'+oc.txt+'">'+ov+'%</span><span class="ov-lbl">'+lv+'</span></div><div class="ov-info" style="flex:1;min-width:0;overflow:hidden"><div style="font-size:.71rem;font-weight:800;color:#f1801c;background:#fff3e8;border-radius:5px;padding:.2rem .55rem;display:inline-block;margin-bottom:.45rem;letter-spacing:.03em">WCA Report ID: '+S.reportId+'</div><h3>'+(S.lead.name||"")+(S.lead.plevel?" &nbsp;|&nbsp; "+S.lead.plevel:"")+'</h3><div class="ov-meta">'+(S.lead.org||"")+(S.lead.gender?" &middot; "+S.lead.gender:"")+(S.lead.age?" &middot; Age: "+S.lead.age:"")+'</div><p>'+om[ti]+'</p>'+rLevelLadder(ov)+'</div></div>'+timePanelHtml+'<div class="comp-list">'+dh+'</div><div class="res-cta"><h3>Ready To Close These Gaps?</h3><p>'+CO_NAME+' offers structured competency development programs built around the exact skills assessed here, combining micro-learning, realistic simulations, and coaching to drive lasting behavioral change.</p><div class="cta-row"><button class="btn-pdf" onclick="dlPDF()">Download My Report</button><a class="btn-join" href="'+PROGRAMME_URL+'" target="_blank">Join Our Competency Development Program</a><a class="btn-join" href="mailto:hello@bridgethebreach.com?body=Bridge%20the%20Breach%20Team%2C%0A%0AI%20just%20completed%20the%20Workplace%20Competency%20Assessment%20and%20I%20would%20like%20to%20talk%20to%20you%20about%20..." style="border-color:#f1801c;color:#f1801c">Talk to Our Team</a></div></div><div class="res-foot"><div class="res-foot-name">'+CO_NAME+'</div><div class="res-foot-desc">We help organizations build the conditions for sustained high performance and develop the people who work within those conditions.</div><div class="res-foot-verify">Verify this report: bridgethebreach.com/verification</div><div class="res-foot-services">Performance Consulting &middot; Competency Development &middot; Corporate Training</div><div class="res-foot-contact">'+CO_WEB+' &middot; '+CO_EMAIL+'</div></div></div></div></div>';
 }
 
 // PDF helper: draw watermark on current page
@@ -1064,8 +1066,11 @@ function dlPDF(){
   doc.setFont("helvetica","normal");doc.setFontSize(8);doc.setTextColor("#555");
   doc.text("We help organizations build the conditions for sustained high performance and develop the people who work within those conditions.",ml,y);y+=5;
   doc.setTextColor("#888");doc.text("Performance Consulting  |  Competency Development  |  Corporate Training",ml,y);y+=5;
-  doc.setTextColor("#999");doc.text(CO_WEB+"  |  "+CO_EMAIL,ml,y);y+=5;
-  doc.setTextColor("#bbb");doc.setFontSize(7);doc.text("Verify this report at: bridgethebreach.com/verification  |  Report ID: "+S.reportId,ml,y);
+  doc.setFont("helvetica","bold");doc.setFontSize(8);doc.setTextColor("#f1801c");
+  doc.text("Verify this report: bridgethebreach.com/verification  ·  Report ID: "+S.reportId,ml,y);y+=5;
+  doc.setFont("helvetica","normal");doc.setFontSize(7.5);doc.setTextColor("#aaa");
+  doc.text("Performance Consulting  ·  Competency Development  ·  Corporate Training",ml,y);y+=4;
+  doc.setTextColor("#999");doc.text(CO_WEB+"  |  "+CO_EMAIL,ml,y);
 
   var fname="BTB-Workplace-Competency-Report-"+(S.lead.name||"Report").replace(/\s+/g,"-")+".pdf";
   // Use blob URL so iOS shows filename only, not github.io as source
